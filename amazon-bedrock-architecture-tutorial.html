@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Amazon Bedrock Architecture and Data Flow | ITTechGenie</title>
+<style>
+:root{color-scheme:light;--ink:#162537;--muted:#46576c;--paper:#f2f6fa;--card:#fff;--line:#d7e3ee;--brand:#096c63;--tint:#e7f6f3;--orange:#faad55;--nav:#152839;--code:#142638}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:78px}body{margin:0;color:var(--ink);background:var(--paper);font:16px/1.65 system-ui,sans-serif}a{color:#08685f}a:hover{text-decoration-thickness:2px}button,input,textarea{font:inherit}button{cursor:pointer;border:1px solid #a9bdc9;border-radius:8px;background:#fff;color:var(--ink);padding:.4rem .75rem}button:hover{background:var(--tint)}:focus-visible{outline:3px solid #1a8d81;outline-offset:3px}
+header{position:sticky;top:0;z-index:3;background:var(--nav);color:white;padding:.65rem clamp(.75rem,3vw,2rem);display:flex;align-items:center;justify-content:space-between;gap:.7rem;min-height:58px}header a{color:white;text-decoration:none;font-weight:700}header .brand{color:#a9e2d7;font-size:.83rem}header button{font-size:.82rem}
+.layout{max-width:1440px;margin:auto;display:grid;grid-template-columns:242px minmax(0,1fr)}nav{position:sticky;top:60px;align-self:start;max-height:calc(100vh - 66px);overflow:auto;padding:1.2rem .8rem}nav a{display:block;padding:.39rem .55rem;border-radius:7px;text-decoration:none;color:var(--muted);font-size:.88rem}nav a:hover,nav a[aria-current]{background:var(--tint);color:var(--brand)}nav strong{font-size:.78rem;text-transform:uppercase;letter-spacing:.13em;padding:.5rem}main{min-width:0;max-width:1110px;padding:1.1rem clamp(.65rem,2vw,1.6rem) 2rem}.hero{background:#153244;color:white;border-radius:17px;padding:clamp(1.3rem,4vw,3rem);margin-bottom:1.15rem}.hero p{color:#deebf2;max-width:68ch}.hero h1{font-size:clamp(2rem,4vw,3.25rem);margin:.35rem 0;line-height:1.1}.eyebrow{color:#9de7d6;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.79rem}.badges{display:flex;flex-wrap:wrap;gap:.5rem}.badges span{border:1px solid #6e8d9e;padding:.15rem .62rem;border-radius:50px;font-size:.83rem}
+section{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:clamp(1rem,2.6vw,1.8rem);margin:0 0 1rem}section h2{margin:0 0 .75rem;line-height:1.26;font-size:clamp(1.35rem,2.6vw,1.85rem)}h3{line-height:1.35;margin:1.2rem 0 .4rem}p{margin:.5rem 0 .9rem}li+li{margin-top:.25rem}ol,ul{padding-left:1.4rem}.kicker{color:var(--brand);font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;font-weight:800}.callout{background:var(--tint);border-left:4px solid #148275;padding:.7rem .9rem;border-radius:4px;margin:.85rem 0}.warn{background:#fff5e9;border-color:#c77827}.scroll{overflow:auto}.scroll table{min-width:550px}table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{padding:.61rem .66rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#eaf2f7}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;margin:.8rem 0}.card{background:#f6f9fc;border:1px solid var(--line);border-radius:9px;padding:.75rem .85rem}.card h3{margin:0 0 .2rem;font-size:1.05rem}.card p:last-child{margin-bottom:0}code{font: .9em ui-monospace,Consolas,monospace;color:#07564f;background:#edf6f4;padding:.08rem .22rem;border-radius:4px;overflow-wrap:anywhere}.code{position:relative;margin:.8rem 0}pre{margin:0;padding:1.05rem .95rem;background:var(--code);color:#ecf5fe;border-radius:9px;overflow:auto;white-space:pre;tab-size:4;line-height:1.55}pre code{color:inherit;background:none;padding:0}.copy{position:absolute;top:.42rem;right:.42rem;background:#263e51;color:white;border-color:#536a7a;font-size:.76rem}
+figure{margin:1rem 0}figcaption{font-size:.87rem;color:var(--muted);margin-top:.45rem}.diagram{border:1px solid var(--line);border-radius:12px;background:#f7fbfe;padding:.65rem;overflow:auto}.diagram svg{width:100%;min-width:535px;height:auto;display:block}.node{fill:#e9f3ff;stroke:#7893b0;stroke-width:1.5}.core{fill:#e4f6f1;stroke:#3a897f}.data{fill:#fff1dd;stroke:#a98654}.arrow{fill:none;stroke:#4b6779;stroke-width:1.8}.dashed{stroke-dasharray:5 4}.label{fill:#1d3447;font-size:15px;font-weight:700;text-anchor:middle}.sub{fill:#3b566b;font-size:12px;text-anchor:middle}.pipeline{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;padding:.65rem 0}.pipeline b{background:var(--tint);padding:.35rem .58rem;border-radius:7px}.pipeline span{color:var(--brand);font-weight:800}.sequence td:first-child{font-weight:700;white-space:nowrap}.labstep{border-left:3px solid #c4d8e6;padding-left:.85rem}details{border-top:1px solid var(--line);padding:.5rem 0}summary{cursor:pointer;font-weight:700}.pager{display:flex;justify-content:space-between;gap:.5rem;margin-top:1.2rem;border-top:1px solid var(--line);padding-top:.7rem;font-size:.86rem}.pager a{text-decoration:none}.quiz-q{margin:.7rem 0;padding:.6rem;border:1px solid var(--line);border-radius:8px}.quiz-q legend{font-weight:650}.quiz-q label{display:block;padding:.2rem}.quiz-q label:hover{background:var(--tint)}.quiz-bar{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}.result{font-weight:700}dialog{max-width:min(500px,92vw);width:100%;border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:1rem}dialog::backdrop{background:#15283988}textarea{width:100%;min-height:125px;padding:.5rem}.mobile{display:none}.refs li{overflow-wrap:anywhere}.small{font-size:.88rem;color:var(--muted)}.status{position:fixed;bottom:.75rem;right:.75rem;background:var(--nav);color:white;border-radius:8px;padding:.35rem .65rem;z-index:4}.status:empty{display:none}
+@media(max-width:760px){.layout{display:block}nav{position:static;max-height:none;display:none;margin:0 .6rem;background:white;border:1px solid var(--line);border-radius:9px}nav.open{display:block}.mobile{display:inline-block}.cards{grid-template-columns:1fr}main{padding-top:.65rem}header .brand{display:none}}
+@media print{header,nav,.pager,button,dialog,.quiz-bar{display:none!important}.layout{display:block}main{max-width:none;padding:0}body{background:white}.hero{background:white;color:var(--ink);padding:0}.hero p,.eyebrow{color:var(--ink)}section{border:0;padding:.4rem 0;break-inside:auto}.diagram svg{min-width:0}pre{white-space:pre-wrap;background:white;color:black;border:1px solid #ddd}}
+</style>
+</head>
+<body>
+<header><a href="#top">Amazon Bedrock <span class="brand">/ ITTechGenie</span></a><div><button class="mobile" id="menu" aria-controls="topics" aria-expanded="false">Topics</button> <button id="notes-open">My notes</button> <button id="print-page">Print</button></div></header>
+<div class="layout" id="top"><nav id="topics" aria-label="Tutorial sections"><strong>Contents</strong></nav>
+<main>
+<div class="hero"><div class="eyebrow">AWS generative AI workshop</div><h1>Amazon Bedrock<br>Architecture &amp; Data Flow</h1><p>Follow a request from the application to a foundation model. Then build a document assistant that finds internal policy passages and returns an answer with sources.</p><div class="badges"><span>Architecture diagrams</span><span>Console + Python labs</span><span>Production notes</span><span>Practice exam</span></div></div>
+
+<section id="overview"><div class="kicker">01 / Foundation</div><h2>What Amazon Bedrock does</h2>
+<p>Amazon Bedrock is the managed AI layer between your application and a foundation model. Your application can send a prompt directly to a model or use <strong>Bedrock Knowledge Bases</strong> to retrieve relevant passages from your documents before generating an answer.</p>
+<div class="cards"><div class="card"><h3>Direct inference</h3><p>Ask “Summarize this incident report” and send the report text in the request. The application already has the context.</p></div><div class="card"><h3>Retrieval-augmented generation</h3><p>Ask “What is the approval process for production access?” Bedrock searches an indexed policy collection and passes relevant excerpts to a generation model.</p></div></div>
+<p><strong>RAG</strong> supplies evidence at query time. Updating the policy generally means updating and syncing the data source. The foundation model’s weights stay the same.</p>
+<p><a href="https://aws.amazon.com/bedrock/faqs/">AWS Bedrock FAQ</a></p></section>
+
+<section id="architecture"><div class="kicker">02 / Architecture</div><h2>Application, Bedrock and storage</h2>
+<figure><div class="diagram"><svg viewBox="0 0 740 410" role="img" aria-labelledby="arch-title arch-desc">
+<title id="arch-title">Amazon Bedrock reference architecture</title><desc id="arch-desc">A user sends a request to the application. The application calls Bedrock Runtime for direct inference or a custom Knowledge Base for retrieval and generation. The knowledge base reads source documents from S3 during ingestion, writes and searches a vector store, and sends retrieved context to the foundation model.</desc>
+<defs><marker id="head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#4b6779"/></marker></defs>
+<g class="arrow" marker-end="url(#head)"><path d="M370 64V90"/><path d="M300 142V169H169V202"/><path d="M440 142V169H570V202"/><path d="M169 254V282H330V334"/><path d="M570 254V282H410V334"/><path d="M608 134V202"/><path d="M653 254V334" marker-start="url(#head)"/></g>
+<g><rect class="node" x="275" y="15" width="190" height="49" rx="9"/><text class="label" x="370" y="45">User or chatbot</text>
+<rect class="node" x="263" y="90" width="214" height="52" rx="9"/><text class="label" x="370" y="112">Application backend</text><text class="sub" x="370" y="129">Lambda, ECS or another host</text>
+<rect class="core node" x="62" y="202" width="214" height="52" rx="9"/><text class="label" x="169" y="224">Bedrock Runtime</text><text class="sub" x="169" y="241">Converse</text>
+<rect class="core node" x="446" y="202" width="248" height="52" rx="9"/><text class="label" x="570" y="224">Bedrock Knowledge Base</text><text class="sub" x="570" y="241">RetrieveAndGenerate · custom</text>
+<rect class="data node" x="535" y="90" width="146" height="44" rx="9"/><text class="label" x="608" y="117">S3 documents</text>
+<rect class="core node" x="263" y="334" width="214" height="52" rx="9"/><text class="label" x="370" y="365">Foundation model</text>
+<rect class="data node" x="564" y="334" width="146" height="52" rx="9"/><text class="label" x="637" y="356">Vector store</text><text class="sub" x="637" y="374">Index and search</text>
+<text class="sub" x="651" y="166">Sync</text><text class="sub" x="256" y="274">Prompt</text><text class="sub" x="492" y="274">Question + passages</text></g>
+</svg></div><figcaption>Request and indexing paths. Answers return through the API that received the request. This example uses a custom vector-store knowledge base.</figcaption></figure>
+<p>The backend’s <strong>IAM role</strong> authorizes API calls. A separate Knowledge Base service role can access its source, embedding model and vector store as required by the configuration. <strong>Guardrails</strong> apply configured content policies. <strong>CloudWatch</strong> supports operational monitoring.</p>
+<div class="scroll"><table><thead><tr><th>Boundary</th><th>Responsibility</th></tr></thead><tbody><tr><td>Application</td><td>Authenticate the user, enforce application permissions, build messages, call APIs and display citations.</td></tr><tr><td>Bedrock</td><td>Run model inference and, for the selected Knowledge Base path, orchestrate ingestion, retrieval and generation.</td></tr><tr><td>AWS resources</td><td>S3 holds source documents. A vector store indexes searchable content. IAM controls access. CloudWatch records configured telemetry.</td></tr></tbody></table></div></section>
+
+<section id="models"><div class="kicker">03 / Model catalog</div><h2>Foundation models and inference settings</h2>
+<div class="scroll"><table><thead><tr><th>Component</th><th>What it does</th><th>How to try it</th></tr></thead><tbody>
+<tr><td>Generation model</td><td>Produces an answer or structured output from messages and context.</td><td>In the Bedrock model catalog, choose a chat model with Converse support. Use the exact model ID or inference profile supported by the model and your Region.</td></tr>
+<tr><td>Embedding model</td><td>Maps text to numeric vectors so related text can be searched by similarity.</td><td>Select a text embedding model when creating a custom vector-store Knowledge Base. An existing index must match the embedding dimensions and field mapping.</td></tr>
+<tr><td>Reranker</td><td>Reorders candidate passages by relevance before the final context is selected.</td><td>Compare retrieval results for the same question with and without reranking where supported.</td></tr>
+<tr><td>Inference profile</td><td>Identifies a supported inference configuration. Cross-Region profiles can route requests to a set of Regions.</td><td>Check the profile’s model and destination Regions against your permissions and data-location requirements.</td></tr>
+</tbody></table></div>
+<p>For a training lab, select a model by modality, API compatibility, Region, quality, latency and cost. Start with a low output-token limit. Lower temperature can reduce variation, but repeated answers can still differ.</p>
+<p><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html">AWS model access</a> · <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles.html">Inference profiles</a></p></section>
+
+<section id="direct"><div class="kicker">04 / Runtime</div><h2>Direct model inference data flow</h2>
+<ol><li>User submits a task, such as summarizing a pasted incident report.</li><li>Backend sends the model ID or profile, user message and any system instructions or conversation history to <code>Converse</code>.</li><li>Bedrock invokes the model and returns the generated response. The backend displays it to the user.</li></ol>
+<div class="scroll"><table class="sequence"><thead><tr><th>From → To</th><th>Payload</th></tr></thead><tbody><tr><td>User → application</td><td>Task and report text.</td></tr><tr><td>Application → Bedrock</td><td><code>messages</code>, <code>modelId</code>, optional system instructions, inference settings.</td></tr><tr><td>Bedrock → application</td><td>Message content, stop reason, usage, and runtime metrics when returned.</td></tr></tbody></table></div>
+<div class="cards"><div class="card"><h3>Converse / ConverseStream</h3><p>Use a shared messages interface for supported models. Streaming lets a UI display text as it arrives.</p></div><div class="card"><h3>InvokeModel</h3><p>Use the model-specific request and response schema when the use case or model requires it, such as a text embedding invocation.</p></div></div>
+<p>For a multi-turn direct chat, retain and resend the history your application wants the model to see. Limit the amount of history to control context size and cost.</p>
+<p><a href="https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_Converse.html">Converse API</a> · <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html">Converse guide</a></p></section>
+
+<section id="ingestion"><div class="kicker">05 / Documents and indexing</div><h2>RAG ingestion data flow</h2>
+<figure><div class="pipeline" aria-label="Ingestion pipeline"><b>S3 documents</b><span aria-hidden="true">→</span><b>Parse</b><span aria-hidden="true">→</span><b>Chunk</b><span aria-hidden="true">→</span><b>Embed</b><span aria-hidden="true">→</span><b>Vector index</b></div><figcaption>Run the initial sync before testing retrieval. Sync changes when source policies are updated.</figcaption></figure>
+<div class="scroll"><table><thead><tr><th>Component</th><th>What it stores or does</th><th>Lab checkpoint</th></tr></thead><tbody>
+<tr><td>Amazon S3 source</td><td>Original policy files in a private bucket and selected prefix.</td><td>Confirm the sample file’s object key and the Knowledge Base source prefix.</td></tr>
+<tr><td>Parser</td><td>Extracts searchable content from the supported document format.</td><td>Start with text. When moving to scanned PDFs or tables, test parser support and extracted content.</td></tr>
+<tr><td>Chunking</td><td>Splits text into passages. Chunk size and boundaries affect whether one result contains enough evidence.</td><td>Keep a short rule and its exception together. Compare results with representative questions.</td></tr>
+<tr><td>Embedding model</td><td>Produces vectors from passages. In a semantic vector search, the query is also represented in vector space.</td><td>Use compatible document/query embeddings and index dimensions.</td></tr>
+<tr><td>Vector store</td><td>Indexes vectors with mapped text and metadata, or references to it, so passages can be found later.</td><td>Use a supported option such as OpenSearch Serverless or S3 Vectors where available. Check sync status and failed documents.</td></tr>
+</tbody></table></div>
+<p><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-create.html">Create a Knowledge Base and choose its vector store</a></p></section>
+
+<section id="retrieval"><div class="kicker">06 / Retrieval and grounding</div><h2>RAG query data flow</h2>
+<p>In the policy assistant, an employee asks <strong>“What is the approval process for production access?”</strong> The approved policy file was indexed during ingestion.</p>
+<figure><div class="diagram"><svg viewBox="0 0 740 317" role="img" aria-labelledby="seq-title seq-desc">
+<title id="seq-title">Retrieve and generate request sequence</title><desc id="seq-desc">The application asks the Knowledge Base a question. The Knowledge Base searches the vector store, which returns passages and source metadata. The Knowledge Base sends the question and passages to a foundation model, then returns the answer with citations to the application.</desc>
+<defs><marker id="seq-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#4b6779"/></marker></defs>
+<g class="arrow dashed"><path d="M87 55V304"/><path d="M275 55V304"/><path d="M465 55V304"/><path d="M650 55V304"/></g>
+<g class="arrow" marker-end="url(#seq-head)"><path d="M87 91H275"/><path d="M275 128H465"/><path d="M465 165H275"/><path d="M275 202H650"/><path d="M650 239H275"/><path d="M275 280H87"/></g>
+<g><rect class="node" x="16" y="11" width="142" height="44" rx="8"/><rect class="node core" x="191" y="11" width="168" height="44" rx="8"/><rect class="node data" x="391" y="11" width="148" height="44" rx="8"/><rect class="node core" x="569" y="11" width="162" height="44" rx="8"/></g>
+<g class="label"><text x="87" y="39">Application</text><text x="275" y="39">Knowledge Base</text><text x="465" y="39">Vector store</text><text x="650" y="39">Foundation model</text></g>
+<g class="sub"><text x="181" y="83">Submit question</text><text x="370" y="120">Search for passages</text><text x="370" y="157">Passages + source metadata</text><text x="462" y="194">Send question + passages</text><text x="462" y="231">Return generated answer</text><text x="181" y="272">Answer + citations</text></g>
+</svg></div><figcaption>Custom Knowledge Base sequence. Source references can be rendered beside the answer by the application.</figcaption></figure>
+<ol><li><strong>Retrieve.</strong> Search the index for the most relevant chunks. Search may be semantic or hybrid depending on configuration. Metadata filters can narrow eligible documents.</li><li><strong>Ground.</strong> Provide the question and selected evidence to the generation model.</li><li><strong>Respond.</strong> Return generated text and any associated citations. Validate whether the cited passage actually supports the claim.</li></ol>
+<div class="callout"><strong>Choose the API for your Knowledge Base type.</strong> Use <code>RetrieveAndGenerate</code> with the custom vector-store path shown here. Fully managed Knowledge Bases use <code>Retrieve</code> or <code>AgenticRetrieveStream</code>. You can also call <code>Retrieve</code> and pass the returned passages to <code>Converse</code> yourself, using the retrieval options supported by your KB type.</div>
+<p><a href="https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent-runtime_RetrieveAndGenerate.html">RetrieveAndGenerate</a> · <a href="https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent-runtime_Retrieve.html">Retrieve</a> · <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-test-agentic-retrieve.html">Agentic retrieval for managed Knowledge Bases</a></p></section>
+
+<section id="setup"><div class="kicker">07 / Lab setup</div><h2>Prepare the AWS console and local Python</h2>
+<div class="labstep"><h3>1. Pick a Region and verify model access</h3><p>Open the <a href="https://console.aws.amazon.com/bedrock/">Amazon Bedrock console</a>. Select a Region that supports your chat model, Knowledge Base type and vector store. In <strong>Model catalog</strong>, open a chat model and record its model ID or supported inference profile ID or ARN. Follow the access prerequisites for that model. Some third-party models have Marketplace or first-use requirements.</p></div>
+<div class="labstep"><h3>2. Test the model in the playground</h3><p>Open the chat playground, select your model and paste this prompt: <em>“Summarize in one line: The staging API was unavailable for 15 minutes due to an expired certificate. The team rotated the certificate and restored service.”</em> Look for a one-line summary containing the cause and fix.</p></div>
+<div class="labstep"><h3>3. Prepare a terminal</h3><p>On Windows, use PowerShell with the AWS CLI and Python installed. Use an authorized AWS profile with temporary credentials. If your organization uses IAM Identity Center, run its login command first.</p></div>
+<div class="code"><pre><code>aws sso login --profile training
+aws sts get-caller-identity --profile training
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade boto3
+$env:AWS_PROFILE = "training"
+$env:AWS_DEFAULT_REGION = "replace-with-your-region"
+$env:BEDROCK_MODEL_ID = "replace-with-model-id-or-profile"
+</code></pre></div>
+<p>Change <code>training</code> to your configured profile. Skip the SSO command if you already authenticate through another configured profile. On macOS or Linux, create the environment with <code>python3 -m venv .venv</code>, use <code>./.venv/bin/python</code>, and set variables with <code>export NAME="value"</code>.</p>
+<p><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html">Model access prerequisites</a> · <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html">AWS CLI SSO setup</a></p></section>
+
+<section id="lab-direct"><div class="kicker">08 / Python lab</div><h2>Call Bedrock Runtime with Converse</h2>
+<p>Save this code as <code>infer.py</code>. The SDK uses the profile and Region configured in the previous section.</p>
+<div class="code"><pre><code data-lang="python">import os
+import boto3
+
+runtime = boto3.client("bedrock-runtime")
+result = runtime.converse(
+    modelId=os.environ["BEDROCK_MODEL_ID"],
+    system=[{"text": "Summarize the report in one sentence."}],
+    messages=[{
+        "role": "user",
+        "content": [{"text": (
+            "The staging API was unavailable for 15 minutes due to an "
+            "expired certificate. The team rotated it and restored service."
+        )}],
+    }],
+    inferenceConfig={"maxTokens": 150, "temperature": 0.2},
+)
+for block in result["output"]["message"]["content"]:
+    if "text" in block:
+        print(block["text"])
+print("Usage:", result.get("usage", {}))
+</code></pre></div>
+<div class="code"><pre><code>.\.venv\Scripts\python.exe infer.py</code></pre></div>
+<p><strong>Expected observation.</strong> The response describes the expired certificate and restored service. Exact wording and token usage vary. Change the system instruction to request two bullet points and compare the output.</p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Purpose</th></tr></thead><tbody><tr><td><code>modelId</code></td><td>Selects the configured model or supported inference profile.</td></tr><tr><td><code>system</code> and <code>messages</code></td><td>Separate task guidance from user and assistant turns.</td></tr><tr><td><code>inferenceConfig</code></td><td>Limits generated tokens and sets sampling behaviour for the selected model.</td></tr><tr><td><code>output.message.content</code></td><td>Contains typed content blocks. This lab displays only text blocks.</td></tr></tbody></table></div>
+<p class="small">If the selected model rejects an optional setting, check its supported parameters and retry with a smaller request.</p></section>
+
+<section id="lab-rag"><div class="kicker">09 / RAG lab</div><h2>Build and query the policy Knowledge Base</h2>
+<div class="labstep"><h3>1. Create a sample source</h3><p>In S3, create a private lab bucket in your selected Region. Save this content as <code>production-access.txt</code> and upload it under <code>policies/</code>.</p>
+<div class="code"><pre><code>Production Access Policy
+Employees open a ticket in the Service Desk portal.
+The employee's manager approves the business justification.
+The platform operations team approves the requested access level.
+Grant access for a maximum of 24 hours unless a separate exception is approved.
+</code></pre></div></div>
+<div class="labstep"><h3>2. Create and sync a vector-store Knowledge Base</h3><ol><li>In the Bedrock console, open <strong>Knowledge bases</strong>. Choose the creation option for a Knowledge Base <strong>with a vector store</strong>.</li><li>Choose an existing authorized service role or create a dedicated role. Select Amazon S3 as the data source and enter your bucket and <code>policies/</code> prefix.</li><li>Choose a supported text embedding model and vector-store configuration. Use an eligible quick-create store if the account and Region support it. Review the storage costs and permissions before creating resources.</li><li>Open the Knowledge Base’s data source and choose <strong>Sync</strong>. Wait for completion and review failed-document counts.</li><li>In the Knowledge Base test panel, query the production-access question. Check the retrieved passages or generated answer and citations.</li></ol></div>
+<div class="labstep"><h3>3. Run retrieval and generation from Python</h3><p>Set the Knowledge Base ID from the console and the generation model or supported inference profile <strong>ARN</strong>. The ARN is used by this API’s <code>modelArn</code> field.</p></div>
+<div class="code"><pre><code>$env:BEDROCK_KB_ID = "replace-with-your-kb-id"
+$env:BEDROCK_GENERATION_ARN = "replace-with-model-or-profile-arn"
+</code></pre></div>
+<p>Save as <code>rag.py</code>. Inspect <code>Retrieve</code> results before generating an answer. This script intentionally uses <code>RetrieveAndGenerate</code> only with the custom vector-store Knowledge Base.</p>
+<div class="code"><pre><code data-lang="python">import os
+import boto3
+
+kb = boto3.client("bedrock-agent-runtime")
+kb_id = os.environ["BEDROCK_KB_ID"]
+question = "What is the approval process for production access?"
+
+retrieved = kb.retrieve(
+    knowledgeBaseId=kb_id,
+    retrievalQuery={"text": question},
+)
+for item in retrieved.get("retrievalResults", []):
+    print("Passage:", item.get("content", {}).get("text", ""))
+    print("Location:", item.get("location", {}))
+
+response = kb.retrieve_and_generate(
+    input={"text": question},
+    retrieveAndGenerateConfiguration={
+        "type": "KNOWLEDGE_BASE",
+        "knowledgeBaseConfiguration": {
+            "knowledgeBaseId": kb_id,
+            "modelArn": os.environ["BEDROCK_GENERATION_ARN"],
+            "retrievalConfiguration": {
+                "vectorSearchConfiguration": {"numberOfResults": 3}
+            },
+        },
+    },
+)
+print("Answer:", response["output"]["text"])
+sources = set()
+for citation in response.get("citations", []):
+    for ref in citation.get("retrievedReferences", []):
+        uri = ref.get("location", {}).get("s3Location", {}).get("uri")
+        if uri:
+            sources.add(uri)
+for uri in sorted(sources):
+    print("Source:", uri)
+</code></pre></div>
+<div class="code"><pre><code>.\.venv\Scripts\python.exe rag.py</code></pre></div>
+<p><strong>Expected observation.</strong> The answer should cite the policy and identify the Service Desk ticket, manager approval and platform operations approval. Ask a question unrelated to the document and check whether the system can recognize missing evidence.</p>
+<div class="callout"><strong>Managed Knowledge Base variation.</strong> Keep the <code>Retrieve</code> portion and use the returned text as labeled evidence in the <code>Converse</code> prompt. Preserve each passage’s source location in your application so you can show it beside the answer. For managed agentic retrieval, use <code>AgenticRetrieveStream</code> according to its supported workflow.</div>
+<p><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-create.html">Knowledge Base console steps</a> · <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-test-retrieve-generate.html">Test retrieval and generation</a></p></section>
+
+<section id="components"><div class="kicker">10 / Bedrock capabilities</div><h2>Guardrails, prompts, agents and evaluation</h2>
+<div class="scroll"><table><thead><tr><th>Component</th><th>What it does</th><th>Workshop exercise</th></tr></thead><tbody>
+<tr><td>Guardrails</td><td>Applies configured content policies to supported prompts and responses. The policy can block or mask selected content.</td><td>Create a lab guardrail and test a benign allowed prompt and a configured denied topic. Attach it to a supported playground or API request. Record the intervention.</td></tr>
+<tr><td>Prompt Management</td><td>Stores and versions reusable prompts and their variables.</td><td>Save a policy-assistant prompt with a question variable. Compare two versions with the same evaluation questions.</td></tr>
+<tr><td>Bedrock Agents</td><td>Orchestrates model reasoning, action groups and optional retrieval to complete a task.</td><td>Design a read-only action group for checking the status of a Service Desk ticket. Return a controlled result from a Lambda handler.</td></tr>
+<tr><td>Bedrock Flows</td><td>Connects processing nodes such as prompts and Knowledge Base lookups into a workflow.</td><td>Build a flow with an input, a Knowledge Base step and an output. Test one question and inspect what travels between nodes.</td></tr>
+<tr><td>Evaluation</td><td>Measures model or RAG quality against selected data and metrics.</td><td>Use five known-answer questions and two unsupported questions. Score accuracy, source support and ability to abstain.</td></tr>
+<tr><td>Batch inference</td><td>Runs eligible inference jobs asynchronously for datasets.</td><td>Design an offline summarization job for a file of synthetic incident reports. Compare the job workflow with online chat.</td></tr>
+<tr><td>Bedrock Data Automation</td><td>Extracts structured information from supported unstructured media such as documents, images, audio and video.</td><td>Try a synthetic form and inspect the extracted fields. Verify the parser or ingestion support before choosing this option for a Knowledge Base.</td></tr>
+<tr><td>Model customization</td><td>Adapts a supported model with training data for a defined behaviour.</td><td>Compare a consistent output-format goal with a frequently changing policy-fact goal. Test prompting or RAG before commissioning training.</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>Production access controls belong in the application and retrieval design.</strong> Apply user authorization and document-level scoping before passages reach the model. Treat retrieved text as untrusted evidence and verify that generated citations support the claims.</div>
+<p><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-use.html">Guardrails integration</a> · <a href="https://aws.amazon.com/documentation-overview/bedrock/">Bedrock component documentation</a></p></section>
+
+<section id="agentcore"><div class="kicker">11 / Advanced architecture</div><h2>Where Strands Agents and AgentCore fit</h2>
+<p>A policy Q&amp;A assistant can use Bedrock directly. If you extend it to check ticket status or take other actions, a framework such as <strong>Strands Agents</strong> can run the agent logic, while <strong>Bedrock AgentCore</strong> provides deployment and operational capabilities.</p>
+<div class="scroll"><table><thead><tr><th>Component</th><th>Responsibility</th><th>Example in this use case</th></tr></thead><tbody>
+<tr><td>Strands Agents</td><td>SDK and framework for implementing the agent loop and tools.</td><td>Choose between searching the policy and calling a ticket status tool.</td></tr>
+<tr><td>AgentCore Runtime</td><td>Hosts the agent application with session isolation.</td><td>Deploy the Python agent and invoke it from the backend.</td></tr>
+<tr><td>AgentCore Gateway</td><td>Exposes configured tools to agents through MCP.</td><td>Expose a read-only <code>get_ticket_status</code> tool.</td></tr>
+<tr><td>AgentCore Identity</td><td>Supports workload identity and authorized access to downstream systems.</td><td>Let the agent use authorized credentials for a ticketing API.</td></tr>
+<tr><td>AgentCore Memory</td><td>Stores and retrieves conversation or longer-lived context for the agent.</td><td>Recall the current ticket reference within the intended session scope.</td></tr>
+<tr><td>AgentCore Policy</td><td>Enforces rules for supported Gateway tool calls.</td><td>Permit ticket status reads within the caller’s authorization.</td></tr>
+<tr><td>AgentCore Observability</td><td>Surfaces traces, metrics and logs with applicable instrumentation and configuration.</td><td>Compare model, retrieval and tool latency for a single request.</td></tr>
+</tbody></table></div>
+<p><strong>Design exercise.</strong> Draw the flow from user to agent, then split it into a policy-retrieval branch and a ticket-status branch. Identify which identity authorizes each branch and what happens if the tool times out.</p>
+<p><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/">AgentCore Developer Guide</a> · <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html">AgentCore observability setup</a></p></section>
+
+<section id="operations"><div class="kicker">12 / Production checklist</div><h2>IAM, observability, costs and troubleshooting</h2>
+<div class="cards"><div class="card"><h3>IAM and application access</h3><p>Grant the backend only the model and Knowledge Base actions it needs. Grant the Knowledge Base role access only to its authorized data source, embedding model and vector store. Keep user-level access checks in the application or supported retrieval access controls.</p></div><div class="card"><h3>CloudWatch and logging</h3><p>Track latency, failures, throttles and usage. Enable model invocation logging to CloudWatch Logs or S3 only when appropriate for the supported API and payload. Control log access and retention.</p></div><div class="card"><h3>Cost control</h3><p>Review model inference, embeddings, vector-store capacity and optional logging or evaluation costs. Limit output tokens and set a budget alert. Avoid putting real policies into a shared training account.</p></div><div class="card"><h3>Cleanup</h3><p>Delete the lab Knowledge Base and separately remove any lab-only vector store, S3 objects or buckets, log destinations and IAM resources that you created. Confirm resource dependencies before deletion.</p></div></div>
+<div class="scroll"><table><thead><tr><th>Symptom</th><th>What to check</th></tr></thead><tbody>
+<tr><td><code>AccessDeniedException</code></td><td>Caller identity, Region, permissions, organization policies, model access and service role scope.</td></tr>
+<tr><td><code>ValidationException</code></td><td>Model ID versus ARN, inference profile requirement, model capability, Knowledge Base type and request shape.</td></tr>
+<tr><td>Retrieval is empty</td><td>Data source prefix, sync result, parser output, source filters and supported index configuration.</td></tr>
+<tr><td>Wrong or unsupported answer</td><td>Read the raw chunks, compare against the document, improve chunk boundaries or search settings, and test an explicit abstention rule.</td></tr>
+<tr><td>Throttling</td><td>Check service quotas, use bounded retries with backoff and jitter, and control request concurrency.</td></tr>
+</tbody></table></div>
+<p><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html">Model invocation logging</a> · <a href="https://aws.amazon.com/bedrock/pricing/">Bedrock pricing</a></p></section>
+
+<section id="practice"><div class="kicker">13 / Practice</div><h2>Interview questions and timed review</h2>
+<details><summary>What is the difference between inference and retrieval?</summary><p>Inference runs a model on supplied inputs. Retrieval finds source passages to add as context before generation.</p></details>
+<details><summary>What is the difference between an embedding model and a chat model?</summary><p>An embedding model encodes data as vectors for similarity search. A chat model produces a response from instructions, messages and supplied context.</p></details>
+<details><summary>Why use two IAM roles in the reference architecture?</summary><p>The backend role controls which APIs the application may call. The Knowledge Base service role controls its access to data sources, models and storage.</p></details>
+<details><summary>How would you diagnose an unsupported RAG answer?</summary><p>Call Retrieve, inspect the chunks and source locations, and compare them with the claim. Verify ingestion, chunking, access filters and ranking before tuning the generation prompt.</p></details>
+<details><summary>How do Bedrock Runtime and AgentCore Runtime differ?</summary><p>Bedrock Runtime invokes models. AgentCore Runtime hosts an agent application that can call models, retrieval and tools.</p></details>
+<h3>Six-question review</h3><p>Start the three-minute timer or answer at your own pace. Your last score is stored locally when your browser allows it.</p>
+<form id="quiz"><div class="quiz-bar"><button type="button" id="timer-start">Start 3-minute timer</button><button type="submit" id="grade">Check answers</button><button type="reset">Reset</button><output id="clock" aria-live="off">03:00</output></div><div id="quiz-questions"></div><p id="score" class="result" role="status"></p><p id="last-score" class="small"></p></form>
+<noscript><p>Enable JavaScript to use the timed quiz. The tutorial and interview questions remain readable.</p></noscript>
+<h3>Trainer exercise</h3><p>Ask learners to trace one request from S3 ingestion to a cited answer, then explain the boundary between model inference, retrieval and agent execution. Finally, change the policy’s access duration, resync, and verify the answer cites the updated source.</p>
+</section>
+<footer class="small"><p>ITTechGenie · Amazon Bedrock workshop. Console labels and supported options can vary by Region and account.</p></footer>
+</main></div>
+<dialog id="notes-dialog" aria-labelledby="notes-title"><h2 id="notes-title">My notes</h2><p id="note-topic"></p><label for="note-text">Topic notes</label><textarea id="note-text"></textarea><div class="quiz-bar"><button id="note-save" type="button">Save notes</button><button id="note-close" type="button">Close</button></div><p class="small">Double-click a section heading to open its notes. Notes stay in this browser when local storage is available.</p></dialog>
+<div class="status" id="status" role="status"></div>
+<script>
+const sections = [...document.querySelectorAll('main section')];
+const nav = document.getElementById('topics');
+const menu = document.getElementById('menu');
+const status = document.getElementById('status');
+let statusTimer;
+function flash(message) {
+  status.textContent = message;
+  clearTimeout(statusTimer);
+  statusTimer = setTimeout(() => { status.textContent = ''; }, 2400);
+}
+function readLocal(key) {
+  try { return localStorage.getItem(key); } catch { return null; }
+}
+function writeLocal(key, value) {
+  try { localStorage.setItem(key, value); return true; } catch { return false; }
+}
+const links = sections.map((section, index) => {
+  const heading = section.querySelector('h2');
+  const a = document.createElement('a');
+  a.href = '#' + section.id;
+  a.textContent = (index + 1) + '. ' + heading.textContent;
+  a.onclick = () => { nav.classList.remove('open'); menu.setAttribute('aria-expanded', 'false'); };
+  nav.append(a);
+  heading.ondblclick = () => openNote(section);
+  const pager = document.createElement('div');
+  pager.className = 'pager';
+  for (const [offset, label] of [[-1, '← Previous'], [1, 'Next →']]) {
+    const target = sections[index + offset];
+    const control = document.createElement(target ? 'a' : 'span');
+    if (target) { control.href = '#' + target.id; control.textContent = label; }
+    pager.append(control);
+  }
+  section.append(pager);
+  return a;
+});
+menu.onclick = () => menu.setAttribute('aria-expanded', String(nav.classList.toggle('open')));
+document.getElementById('print-page').onclick = () => window.print();
+let currentSection = sections[0];
+function highlight() {
+  currentSection = sections[0];
+  sections.forEach(section => { if (section.getBoundingClientRect().top <= 100) currentSection = section; });
+  links.forEach((link, index) => {
+    if (sections[index] === currentSection) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+}
+addEventListener('scroll', highlight, {passive:true});
+highlight();
+const dialog = document.getElementById('notes-dialog');
+const noteText = document.getElementById('note-text');
+let noteKey;
+function openNote(section) {
+  noteKey = 'ittechgenie-bedrock-note-' + section.id;
+  document.getElementById('note-topic').textContent = section.querySelector('h2').textContent;
+  noteText.value = readLocal(noteKey) || '';
+  if (!dialog.open) dialog.showModal();
+}
+document.getElementById('notes-open').onclick = () => openNote(currentSection);
+document.getElementById('note-close').onclick = () => dialog.close();
+document.getElementById('note-save').onclick = () => {
+  if (writeLocal(noteKey, noteText.value)) { dialog.close(); flash('Notes saved.'); }
+  else flash('Local storage is unavailable in this browser.');
+};
+document.querySelectorAll('.code').forEach(box => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'copy';
+  button.textContent = 'Copy';
+  button.onclick = async () => {
+    const code = box.querySelector('code');
+    try { await navigator.clipboard.writeText(code.textContent); flash('Copied.'); }
+    catch {
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(code);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      flash('Text selected. Press Ctrl+C or Cmd+C.');
+    }
+  };
+  box.append(button);
+});
+const questions = [
+  ['Which API sends chat messages directly to a supported model?', ['Retrieve', 'Converse', 'StartIngestionJob'], 1],
+  ['What must happen before an uploaded S3 policy is searchable?', ['Run ingestion sync', 'Enable CloudWatch logs', 'Deploy AgentCore Runtime'], 0],
+  ['Which component maps text to vectors?', ['IAM role', 'Generation model', 'Embedding model'], 2],
+  ['Which path uses RetrieveAndGenerate in this workshop?', ['Custom vector-store Knowledge Base', 'Fully managed Knowledge Base', 'Direct inference'], 0],
+  ['What should you inspect first when an answer cites the wrong passage?', ['Generation token limit', 'Raw retrieval results', 'Conversation history length'], 1],
+  ['What is AgentCore Runtime used for?', ['Hosting agent code', 'Indexing original PDFs', 'Invoking a foundation model directly'], 0]
+];
+const quiz = document.getElementById('quiz');
+const clock = document.getElementById('clock');
+const score = document.getElementById('score');
+const lastScore = document.getElementById('last-score');
+const grade = document.getElementById('grade');
+const timerStart = document.getElementById('timer-start');
+let timer;
+const host = document.getElementById('quiz-questions');
+questions.forEach(([question, options], i) => {
+  const field = document.createElement('fieldset');
+  field.className = 'quiz-q';
+  const legend = document.createElement('legend');
+  legend.textContent = (i + 1) + '. ' + question;
+  field.append(legend);
+  options.forEach((option, j) => {
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'q' + i;
+    input.value = j;
+    label.append(input, ' ' + option);
+    field.append(label);
+  });
+  host.append(field);
+});
+function showLast() {
+  const saved = readLocal('ittechgenie-bedrock-score');
+  lastScore.textContent = saved ? 'Last saved score: ' + saved : '';
+}
+function check(timedOut = false) {
+  clearInterval(timer);
+  const values = new FormData(quiz);
+  const points = questions.filter((q,i) => values.get('q'+i) === String(q[2])).length;
+  score.textContent = (timedOut ? 'Time is up. ' : '') + points + '/6. ' +
+    (points === 6 ? 'Strong understanding.' : 'Review the architecture, APIs and lab steps, then try again.');
+  [...host.querySelectorAll('fieldset')].forEach((field,i) => {
+    field.querySelectorAll('.answer').forEach(node => node.remove());
+    const answer = document.createElement('p');
+    answer.className = 'answer small';
+    answer.textContent = 'Answer: ' + questions[i][1][questions[i][2]];
+    field.append(answer);
+  });
+  writeLocal('ittechgenie-bedrock-score', points + '/6');
+  showLast();
+  if (timedOut) { host.querySelectorAll('input').forEach(input => { input.disabled = true; }); grade.disabled = true; }
+}
+timerStart.onclick = () => {
+  clearInterval(timer);
+  timerStart.disabled = true;
+  const deadline = Date.now() + 180000;
+  timer = setInterval(() => {
+    const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+    clock.textContent = String(Math.floor(remaining/60)).padStart(2,'0') + ':' + String(remaining%60).padStart(2,'0');
+    if (remaining === 0) check(true);
+  }, 250);
+};
+quiz.onsubmit = event => { event.preventDefault(); check(); };
+quiz.onreset = () => {
+  clearInterval(timer);
+  clock.textContent = '03:00';
+  score.textContent = '';
+  timerStart.disabled = false;
+  grade.disabled = false;
+  host.querySelectorAll('input').forEach(input => { input.disabled = false; });
+  host.querySelectorAll('.answer').forEach(node => node.remove());
+};
+showLast();
+</script></body></html>

@@ -1,0 +1,370 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LangChain + Ollama Multi-Model Tutorial | ItTechGenie</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:80px}body{margin:0;background:#f5f7fb;color:#22334b;font:16px/1.7 system-ui,Arial,sans-serif}header{position:sticky;top:0;z-index:2;background:#102a43;color:#fff;padding:14px 26px;display:flex;justify-content:space-between;gap:16px;align-items:center}header small{color:#b9d8ef}header a{color:#fff}.layout{max-width:1440px;margin:auto;display:grid;grid-template-columns:270px minmax(0,1fr)}aside{position:sticky;top:76px;height:calc(100vh - 76px);overflow:auto;padding:24px 14px}aside a{display:block;text-decoration:none;color:#34506a;font-size:14px;padding:8px 10px;border-radius:8px}aside a:hover,aside a.active{background:#dcecf8;color:#095b8f}aside span{color:#65849d;margin-right:5px}main{min-width:0;padding:32px}.hero{background:linear-gradient(120deg,#123f60,#146e7c);color:white;border-radius:18px;padding:34px;margin-bottom:28px}.hero h1{font-size:clamp(28px,4vw,44px);line-height:1.2;margin:12px 0}.hero p{color:#d4e8f2;margin-bottom:0}.badge{display:inline-block;font-size:12px;letter-spacing:.08em;background:#ffffff1c;padding:4px 10px;border-radius:30px}section{background:white;padding:30px;border:1px solid #dfe7f0;border-radius:16px;margin-bottom:24px;box-shadow:0 4px 20px #22334b04}h2{font-size:27px;line-height:1.25;margin:6px 0 22px}h3{font-size:19px;margin-top:25px}.eyebrow{color:#067685;font-size:12px;font-weight:750;letter-spacing:.12em}a{color:#075f98}p{margin:12px 0}li{margin:8px 0}code{font:13px/1.6 ui-monospace,Consolas,monospace;background:#eef3f8;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}pre{margin:0;padding:18px;overflow:auto;background:#11283e;color:#e5f2ff;line-height:1.65}pre code{padding:0;background:none;color:inherit;white-space:pre;overflow-wrap:normal}.codebox{border-radius:10px;overflow:hidden;margin:18px 0}.codehead{background:#213e57;color:#b8d8f0;padding:6px 14px;font:12px/1.8 system-ui;display:flex;justify-content:space-between;align-items:center}button{cursor:pointer;background:#e4f1fa;color:#173951;border:0;border-radius:5px;padding:5px 10px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #dce6ef}th{background:#edf5fb}tr:hover td{background:#f5fafc}.tablewrap{overflow:auto;margin:18px 0}.callout{background:#eaf7f5;border-left:4px solid #0b938b;padding:16px 20px;border-radius:5px}details{border:1px solid #d9e5f0;border-radius:9px;padding:12px 16px;margin:14px 0}summary{cursor:pointer;font-weight:650;color:#1b5c85}svg{width:100%;height:auto;font-family:system-ui,Arial}.pager{display:flex;justify-content:space-between;margin-top:28px;padding-top:16px;border-top:1px solid #edf1f6}.pager a{text-decoration:none;font-size:14px}.tools{display:flex;gap:8px}.notes{width:100%;min-height:110px;border:1px solid #bccddd;border-radius:8px;padding:12px;font:inherit}footer{color:#60758a;font-size:13px;padding:8px 0 26px}@media(max-width:900px){.layout{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;overflow:auto;padding:12px}aside a{white-space:nowrap}main{padding:16px}section{padding:22px}header{padding:12px 16px}header small{display:none}}@media print{aside,header,.pager,.copy,.tools{display:none}.layout{display:block}main{padding:0}body{background:white}section{break-inside:auto;box-shadow:none}.hero{color:#123f60;background:white}pre{white-space:pre-wrap;color:#123f60;background:#f0f3f7}details{display:block}details>*{display:block}a{color:inherit}}</style></head><body id="top"><header><strong>ItTechGenie · Local AI Lab</strong><small>LangChain + Ollama · your five installed models</small><div class="tools"><button onclick="window.print()">Print / PDF</button></div></header><div class="layout"><aside aria-label="Lesson navigation"><a href="#s1"><span>01</span> Start here</a><a href="#s2"><span>02</span> Know your models</a><a href="#s3"><span>03</span> Architecture and data flow</a><a href="#s4"><span>04</span> Set up and connect</a><a href="#s5"><span>05</span> Choose one model</a><a href="#s6"><span>06</span> Compare several models</a><a href="#s7"><span>07</span> Writer → reviewer</a><a href="#s8"><span>08</span> Route a task</a><a href="#s9"><span>09</span> Embeddings + chat: mini RAG</a><a href="#s10"><span>10</span> Understand the LangChain code</a><a href="#s11"><span>11</span> Troubleshooting and memory</a><a href="#s12"><span>12</span> Practice and check your understanding</a><a href="#s13"><span>13</span> Run checklist, files and references</a></aside><main><div class="hero"><span class="badge">PYTHON · LOCAL MODELS · BEGINNER LAB</span><h1>One LangChain interface.<br>Multiple Ollama models.</h1><p>Five runnable examples, thirteen short lessons, and a small retrieval lab. Start with llama3.2:1b and phi3.</p></div><section id="s1"><div class="eyebrow">LESSON 01 / 13</div><h2>Start here</h2><div class="callout"><strong>Goal:</strong> use the same LangChain interface to call different local models, pass answers between them, and combine embeddings with chat.</div><p>A beginner lab with five small console examples. Python 3.10+ (3.11 recommended), Ollama and the models listed below are required. There is no cloud API key, vector database, web server, LangGraph or LangSmith requirement. Installing Python dependencies needs internet access; inference uses your configured Ollama server.</p><p>Think of Ollama as the model server and LangChain as the Python toolkit that formats prompts and connects stages. Multiple models can mean comparing independent answers, chaining stages, or choosing one model for a task.</p><div class="pager"><span></span><a href="#s2">Next →</a></div></section><section id="s2"><div class="eyebrow">LESSON 02 / 13</div><h2>Know your models</h2><div class="tablewrap"><table><thead><tr><th>Exact tag</th><th>Role</th><th>Size reported by you</th></tr></thead><tbody><tr><td><code>llama3.2:1b</code></td><td>Lightweight starting chat model</td><td>1.3 GB</td></tr><tr><td><code>phi3:latest</code></td><td>Second chat model for comparison/review</td><td>2.2 GB</td></tr><tr><td><code>llama3.2:latest</code></td><td>Alternative chat model</td><td>2.0 GB</td></tr><tr><td><code>qwen3:8b</code></td><td>Optional larger chat model</td><td>5.2 GB</td></tr><tr><td><code>nomic-embed-text:latest</code></td><td>Embedding vectors for retrieval</td><td>274 MB</td></tr></tbody></table></div>
+<p>Model roles here are teaching choices, not measured quality rankings. <code>nomic-embed-text</code> does not generate chat answers. Installed file size is not peak RAM usage. Tags such as <code>latest</code> can point to different versions after a future pull; these scripts use the exact local tags and never download models.</p><div class="pager"><a href="#s1">← Previous</a><a href="#s3">Next →</a></div></section><section id="s3"><div class="eyebrow">LESSON 03 / 13</div><h2>Architecture and data flow</h2><svg viewBox="0 0 900 460" role="img" aria-label="Architecture: Python examples use LangChain adapters to call models served by local Ollama"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6386a9"/></marker></defs><rect x="12" y="12" width="876" height="436" rx="20" fill="#f0f6fc" stroke="#c8d9e9"/><text x="450" y="44" text-anchor="middle" fill="#38506c" font-size="18">Your computer · local inference</text><g fill="#fff" stroke="#b3c8dd" stroke-width="2"><rect x="40" y="90" width="210" height="90" rx="12"/><rect x="345" y="90" width="210" height="90" rx="12"/><rect x="650" y="90" width="210" height="90" rx="12"/><rect x="40" y="285" width="210" height="100" rx="12"/><rect x="345" y="285" width="210" height="100" rx="12"/><rect x="650" y="285" width="210" height="100" rx="12"/></g><g stroke="#6386a9" stroke-width="2" fill="none" marker-end="url(#arr)"><path d="M250 135H345"/><path d="M555 135H650"/><path d="M250 335H345"/><path d="M555 335H650"/><path d="M755 285V180"/></g><g fill="#17314c" font-size="19" text-anchor="middle"><text x="145" y="125">Python demos</text><text x="145" y="153" font-size="15">select · compare · chain</text><text x="450" y="125">ChatOllama</text><text x="450" y="153" font-size="15">LangChain chat adapter</text><text x="755" y="119">Ollama server</text><text x="755" y="146" font-size="15">localhost:11434</text><text x="755" y="168" font-size="13">llama3.2 · phi3 · qwen3</text><text x="145" y="321">Policy text + question</text><text x="145" y="350" font-size="15">mini RAG example</text><text x="450" y="319">OllamaEmbeddings</text><text x="450" y="349" font-size="15">nomic-embed-text</text><text x="755" y="319">Cosine retrieval</text><text x="755" y="350" font-size="15">question + top excerpts</text></g><text x="450" y="420" text-anchor="middle" font-size="15" fill="#38506c">Embedding calls also go to the same Ollama server; answers return to your console.</text></svg><h3>Three useful multi-model patterns</h3><div class="tablewrap"><table><thead><tr><th>Pattern</th><th>Data flow</th><th>Example</th></tr></thead><tbody><tr><td>Comparison</td><td>Same question → each model independently → separate answers</td><td>Lesson 2</td></tr><tr><td>Two-stage workflow</td><td>Topic → writer → draft → reviewer → revision</td><td>Lesson 3</td></tr><tr><td>Routing</td><td>Task type → Python rule → selected model → answer</td><td>Lesson 4</td></tr></tbody></table></div>
+<p>For RAG, document vectors and question vectors go into cosine ranking. Only the selected text excerpts are supplied to the chat model. Embeddings are numeric search representations; chat answers are generated text. A model switch does not combine model weights or train a new model.</p><div class="pager"><a href="#s2">← Previous</a><a href="#s4">Next →</a></div></section><section id="s4"><div class="eyebrow">LESSON 04 / 13</div><h2>Set up and connect</h2><p>Extract the ZIP. In VS Code choose <strong>File &gt; Open Folder</strong> and select <code>ollama-langchain-multi-model</code>, the folder containing this README. Open a terminal there.</p>
+<p>Check Python and Ollama:</p>
+<div class="codebox"><div class="codehead">powershell<button class="copy">Copy</button></div><pre><code>py --version
+ollama --version
+ollama list</code></pre></div>
+<p>On Ubuntu/macOS use <code>python3 --version</code> in place of <code>py --version</code>. Keep Ollama running. On Windows, open the Ollama application. If no server is running, use a separate terminal:</p>
+<div class="codebox"><div class="codehead">text<button class="copy">Copy</button></div><pre><code>ollama serve</code></pre></div>
+<p>If this says the port/address is already in use, an Ollama server may already be running. Continue with the connection check instead of starting a second server. Your models are already installed, so no pull is needed for this lab.</p>
+<h3>Windows PowerShell</h3>
+<div class="codebox"><div class="codehead">powershell<button class="copy">Copy</button></div><pre><code>py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe check_setup.py</code></pre></div>
+<p>These commands use the virtual environment directly; activation and an execution-policy change are unnecessary. A missing-model message means the tag does not match <code>ollama list</code>. After installation, optionally record your actual dependency versions:</p>
+<div class="codebox"><div class="codehead">powershell<button class="copy">Copy</button></div><pre><code>.\.venv\Scripts\python.exe -m pip freeze &gt; requirements-local-lock.txt</code></pre></div>
+<p><code>requirements.txt</code> uses compatible major-version ranges, not an exact tested lockfile.</p>
+<h3>Ubuntu / macOS</h3>
+<div class="codebox"><div class="codehead">bash<button class="copy">Copy</button></div><pre><code>python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python check_setup.py</code></pre></div>
+<p>If Ubuntu reports that venv is unavailable, install your distribution&#x27;s <code>python3-venv</code> package first. In all commands below, Ubuntu/macOS users replace <code>.\.venv\Scripts\python.exe</code> with <code>.venv/bin/python</code>.</p><div class="pager"><a href="#s3">← Previous</a><a href="#s5">Next →</a></div></section><section id="s5"><div class="eyebrow">LESSON 05 / 13</div><h2>Choose one model</h2><div class="codebox"><div class="codehead">powershell<button class="copy">Copy</button></div><pre><code>.\.venv\Scripts\python.exe 01_single_model.py
+.\.venv\Scripts\python.exe 01_single_model.py --model phi3:latest --question &quot;Explain REST APIs in three sentences.&quot;
+.\.venv\Scripts\python.exe 01_single_model.py --model llama3.2:latest
+.\.venv\Scripts\python.exe 01_single_model.py --model qwen3:8b --max-tokens 512</code></pre></div>
+<p>Expected structure: <code>Model: ...</code> followed by generated text. Wording varies. All chat models use the same <code>ChatOllama</code> interface; only the model tag changes.</p><details><summary>Read the complete 01_single_model.py</summary><div class="codebox"><div class="codehead">python<button class="copy">Copy</button></div><pre><code>&quot;&quot;&quot;Lesson 1: choose one installed model through ChatOllama.&quot;&quot;&quot;
+import argparse
+from common import CHAT_MODELS, add_settings, make_chat, require_models, run_cli, text_content
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_settings(parser)
+    parser.add_argument(&quot;--model&quot;, choices=CHAT_MODELS, default=&quot;llama3.2:1b&quot;)
+    parser.add_argument(&quot;--question&quot;, default=&quot;Explain an API in three short sentences.&quot;)
+    args = parser.parse_args()
+    require_models(args.base_url, [args.model])
+    print(&quot;Model:&quot;, args.model, flush=True)
+    model = make_chat(args.model, args)
+    response = model.invoke([
+        (&quot;system&quot;, &quot;You are a concise, beginner-friendly technical trainer.&quot;),
+        (&quot;human&quot;, args.question),
+    ])
+    print(text_content(response))
+
+
+if __name__ == &quot;__main__&quot;:
+    run_cli(main)
+</code></pre></div></details><div class="pager"><a href="#s4">← Previous</a><a href="#s6">Next →</a></div></section><section id="s6"><div class="eyebrow">LESSON 06 / 13</div><h2>Compare several models</h2><div class="codebox"><div class="codehead">powershell<button class="copy">Copy</button></div><pre><code>.\.venv\Scripts\python.exe 02_compare_models.py
+.\.venv\Scripts\python.exe 02_compare_models.py --models llama3.2:1b phi3:latest llama3.2:latest qwen3:8b --question &quot;What is dependency injection?&quot;</code></pre></div>
+<p>Every model receives the same question. Calls run one at a time. Output contains a model heading, answer and elapsed seconds for each. Timings include loading and are demonstrations, not controlled benchmarks. A failed call is reported and the loop tries the remaining models, then exits with an error status if any failed.</p><details><summary>Read the complete 02_compare_models.py</summary><div class="codebox"><div class="codehead">python<button class="copy">Copy</button></div><pre><code>&quot;&quot;&quot;Lesson 2: send the same prompt to multiple models, sequentially.&quot;&quot;&quot;
+import argparse
+from time import perf_counter
+from common import CHAT_MODELS, add_settings, make_chat, require_models, run_cli, text_content
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_settings(parser)
+    parser.add_argument(&quot;--models&quot;, nargs=&quot;+&quot;, choices=CHAT_MODELS,
+                        default=[&quot;llama3.2:1b&quot;, &quot;phi3:latest&quot;])
+    parser.add_argument(&quot;--question&quot;, default=&quot;Explain DNS using a simple real-world example.&quot;)
+    args = parser.parse_args()
+    require_models(args.base_url, args.models)
+    failures = []
+    for name in args.models:
+        print(f&quot;\n--- {name} ---&quot;, flush=True)
+        started = perf_counter()
+        try:
+            result = make_chat(name, args).invoke([
+                (&quot;system&quot;, &quot;Answer in no more than five short sentences.&quot;),
+                (&quot;human&quot;, args.question),
+            ])
+            print(text_content(result))
+            print(f&quot;Elapsed seconds: {perf_counter() - started:.2f}&quot;)
+        except Exception as error:
+            failures.append(name)
+            print(f&quot;FAILED: {error}&quot;)
+    if failures:
+        print(&quot;\nFailed models:&quot;, &quot;, &quot;.join(failures))
+        raise SystemExit(1)
+
+
+if __name__ == &quot;__main__&quot;:
+    run_cli(main)
+</code></pre></div></details><div class="pager"><a href="#s5">← Previous</a><a href="#s7">Next →</a></div></section><section id="s7"><div class="eyebrow">LESSON 07 / 13</div><h2>Writer → reviewer</h2><div class="codebox"><div class="codehead">powershell<button class="copy">Copy</button></div><pre><code>.\.venv\Scripts\python.exe 03_two_model_pipeline.py --topic &quot;Explain async and await in C#&quot;
+.\.venv\Scripts\python.exe 03_two_model_pipeline.py --writer llama3.2:latest --reviewer phi3:latest --topic &quot;Explain database indexing&quot;</code></pre></div>
+<p><code>llama3.2:1b</code> drafts by default. Its output becomes an input to <code>phi3:latest</code>, which rewrites it. Each stage is a LangChain expression: <code>prompt | model | StrOutputParser()</code>. This is a two-stage workflow; the reviewer can still make mistakes. Confirm technical claims yourself.</p><details><summary>Read the complete 03_two_model_pipeline.py</summary><div class="codebox"><div class="codehead">python<button class="copy">Copy</button></div><pre><code>&quot;&quot;&quot;Lesson 3: one model drafts; a second model rewrites the draft.&quot;&quot;&quot;
+import argparse
+from common import CHAT_MODELS, add_settings, make_chat, require_models, run_cli
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_settings(parser)
+    parser.add_argument(&quot;--writer&quot;, choices=CHAT_MODELS, default=&quot;llama3.2:1b&quot;)
+    parser.add_argument(&quot;--reviewer&quot;, choices=CHAT_MODELS, default=&quot;phi3:latest&quot;)
+    parser.add_argument(&quot;--topic&quot;, default=&quot;What is a REST API?&quot;)
+    args = parser.parse_args()
+    from langchain_core.output_parsers import StrOutputParser
+    from langchain_core.prompts import ChatPromptTemplate
+    require_models(args.base_url, [args.writer, args.reviewer])
+
+    draft_prompt = ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;Write a concise beginner explanation in at most 100 words.&quot;),
+        (&quot;human&quot;, &quot;Topic: {topic}&quot;),
+    ])
+    review_prompt = ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;Rewrite the draft clearly in at most 100 words. Correct obvious &quot;
+                   &quot;technical mistakes. Return only the revised explanation.&quot;),
+        (&quot;human&quot;, &quot;Original topic: {topic}\nDraft:\n{draft}&quot;),
+    ])
+    writer_chain = draft_prompt | make_chat(args.writer, args) | StrOutputParser()
+    reviewer_chain = review_prompt | make_chat(args.reviewer, args) | StrOutputParser()
+
+    print(&quot;Draft model:&quot;, args.writer, flush=True)
+    draft = writer_chain.invoke({&quot;topic&quot;: args.topic})
+    if not draft.strip():
+        raise RuntimeError(&quot;Writer returned an empty draft. Increase --max-tokens.&quot;)
+    print(draft)
+    print(&quot;\nReview model:&quot;, args.reviewer, flush=True)
+    revised = reviewer_chain.invoke({&quot;topic&quot;: args.topic, &quot;draft&quot;: draft})
+    if not revised.strip():
+        raise RuntimeError(&quot;Reviewer returned an empty answer. Increase --max-tokens.&quot;)
+    print(revised)
+
+
+if __name__ == &quot;__main__&quot;:
+    run_cli(main)
+</code></pre></div></details><div class="pager"><a href="#s6">← Previous</a><a href="#s8">Next →</a></div></section><section id="s8"><div class="eyebrow">LESSON 08 / 13</div><h2>Route a task</h2><div class="codebox"><div class="codehead">powershell<button class="copy">Copy</button></div><pre><code>.\.venv\Scripts\python.exe 04_route_models.py --task quick --question &quot;What is HTTP?&quot;
+.\.venv\Scripts\python.exe 04_route_models.py --task detailed --question &quot;Explain HTTP methods&quot;
+.\.venv\Scripts\python.exe 04_route_models.py --task detailed --model qwen3:8b --question &quot;Explain HTTP methods&quot;</code></pre></div>
+<p>The application maps <code>quick</code> to <code>llama3.2:1b</code>, and <code>detailed</code> to <code>phi3:latest</code>. It invokes only the selected model. This is an explicit Python routing rule, not an autonomous agent or an automatic quality classifier. <code>--model</code> overrides the selected route.</p><details><summary>Read the complete 04_route_models.py</summary><div class="codebox"><div class="codehead">python<button class="copy">Copy</button></div><pre><code>&quot;&quot;&quot;Lesson 4: an explicit task label selects one model.&quot;&quot;&quot;
+import argparse
+from common import CHAT_MODELS, add_settings, make_chat, require_models, run_cli, text_content
+
+DEFAULT_ROUTE = {&quot;quick&quot;: &quot;llama3.2:1b&quot;, &quot;detailed&quot;: &quot;phi3:latest&quot;}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_settings(parser)
+    parser.add_argument(&quot;--task&quot;, choices=DEFAULT_ROUTE, default=&quot;quick&quot;)
+    parser.add_argument(&quot;--model&quot;, choices=CHAT_MODELS,
+                        help=&quot;Override the default model for the selected task.&quot;)
+    parser.add_argument(&quot;--question&quot;, default=&quot;Explain why APIs need authentication.&quot;)
+    args = parser.parse_args()
+    chosen = args.model or DEFAULT_ROUTE[args.task]
+    require_models(args.base_url, [chosen])
+    style = &quot;Use three short sentences.&quot; if args.task == &quot;quick&quot; else &quot;Use five concise bullet points.&quot;
+    print(f&quot;Task: {args.task}; selected model: {chosen}&quot;, flush=True)
+    result = make_chat(chosen, args).invoke([
+        (&quot;system&quot;, &quot;You are a technical trainer. &quot; + style),
+        (&quot;human&quot;, args.question),
+    ])
+    print(text_content(result))
+
+
+if __name__ == &quot;__main__&quot;:
+    run_cli(main)
+</code></pre></div></details><div class="pager"><a href="#s7">← Previous</a><a href="#s9">Next →</a></div></section><section id="s9"><div class="eyebrow">LESSON 09 / 13</div><h2>Embeddings + chat: mini RAG</h2><div class="codebox"><div class="codehead">powershell<button class="copy">Copy</button></div><pre><code>.\.venv\Scripts\python.exe 05_embeddings_rag.py
+.\.venv\Scripts\python.exe 05_embeddings_rag.py --model phi3:latest --question &quot;What should I do if my laptop breaks?&quot; --top-k 1</code></pre></div>
+<p>The three fictional company policies live in <code>data/policies.json</code>:</p>
+<ol><li><code>OllamaEmbeddings</code> sends document text to <code>nomic-embed-text:latest</code> and receives numeric vectors.</li><li>It embeds the question with the same embedding model.</li><li>Python cosine similarity ranks the documents; the best <code>--top-k</code> excerpts form the context.</li><li><code>ChatOllama</code> sends that context and question to your chosen chat model.</li><li>The script prints retrieved evidence, generated answer and retrieved source IDs.</li></ol>
+<p>For the default question, the intended evidence is <code>production-access-v1</code>: approval comes from the manager and platform operations; access lasts 24 hours. This is sample policy data, not real company guidance. Retrieval is semantic and can choose the wrong excerpt; inspect the printed evidence. Retrieved source IDs describe the evidence supplied, not verified model citations. The tiny lab rebuilds all vectors on each run, stores them in memory, and uses no vector database. <code>search_document:</code> and <code>search_query:</code> distinguish the document/query embedding tasks. Do not change embedding models for just one side: both vectors must share the same embedding space.</p><details><summary>Read the complete 05_embeddings_rag.py</summary><div class="codebox"><div class="codehead">python<button class="copy">Copy</button></div><pre><code>&quot;&quot;&quot;Lesson 5: nomic embeddings retrieve evidence; a chat model answers.&quot;&quot;&quot;
+import argparse
+import json
+from pathlib import Path
+from common import (
+    CHAT_MODELS, EMBEDDING_MODEL, add_settings, cosine_similarity,
+    make_chat, positive_int, require_models, run_cli, text_content,
+)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_settings(parser)
+    parser.add_argument(&quot;--model&quot;, choices=CHAT_MODELS, default=&quot;llama3.2:1b&quot;)
+    parser.add_argument(&quot;--question&quot;, default=&quot;Who approves production access and how long does it last?&quot;)
+    parser.add_argument(&quot;--top-k&quot;, type=positive_int, default=1)
+    args = parser.parse_args()
+    from langchain_ollama import OllamaEmbeddings
+    require_models(args.base_url, [EMBEDDING_MODEL, args.model])
+
+    path = Path(__file__).resolve().parent / &quot;data&quot; / &quot;policies.json&quot;
+    documents = json.loads(path.read_text(encoding=&quot;utf-8&quot;))
+    if not documents:
+        raise ValueError(&quot;The policy file has no documents.&quot;)
+    embedder = OllamaEmbeddings(
+        model=EMBEDDING_MODEL, base_url=args.base_url,
+        client_kwargs={&quot;timeout&quot;: args.timeout, &quot;trust_env&quot;: False},
+    )
+    print(&quot;Embedding model:&quot;, EMBEDDING_MODEL, flush=True)
+    vectors = embedder.embed_documents([
+        &quot;search_document: &quot; + doc[&quot;text&quot;] for doc in documents
+    ])
+    query_vector = embedder.embed_query(&quot;search_query: &quot; + args.question)
+    if len(vectors) != len(documents):
+        raise ValueError(&quot;Embedding result count does not match the document count.&quot;)
+    ranked = sorted(
+        [(cosine_similarity(query_vector, vector), doc)
+         for vector, doc in zip(vectors, documents)],
+        key=lambda pair: pair[0], reverse=True,
+    )[:args.top_k]
+    print(&quot;\nRetrieved evidence:&quot;)
+    for score, doc in ranked:
+        print(f&quot;{doc[&#x27;id&#x27;]} | cosine={score:.3f}&quot;)
+        print(doc[&quot;text&quot;])
+    context = &quot;\n\n&quot;.join(f&quot;[{doc[&#x27;id&#x27;]}] {doc[&#x27;text&#x27;]}&quot; for _, doc in ranked)
+    print(&quot;\nAnswer model:&quot;, args.model, flush=True)
+    response = make_chat(args.model, args).invoke([
+        (&quot;system&quot;, &quot;Answer only from the supplied policy excerpts. If the excerpts &quot;
+                   &quot;do not answer the question, say that evidence is missing. &quot;
+                   &quot;Keep the answer under 100 words.&quot;),
+        (&quot;human&quot;, f&quot;Question: {args.question}\n\nPolicy excerpts:\n{context}&quot;),
+    ])
+    print(text_content(response))
+    print(&quot;Retrieved source IDs:&quot;, &quot;, &quot;.join(doc[&quot;id&quot;] for _, doc in ranked))
+
+
+if __name__ == &quot;__main__&quot;:
+    run_cli(main)
+</code></pre></div></details><div class="pager"><a href="#s8">← Previous</a><a href="#s10">Next →</a></div></section><section id="s10"><div class="eyebrow">LESSON 10 / 13</div><h2>Understand the LangChain code</h2><ul><li><code>base_url</code>: Ollama HTTP endpoint, normally <code>http://127.0.0.1:11434</code>.</li><li><code>temperature=0.2</code>: requests less variable responses; does not promise identical output.</li><li><code>num_ctx=2048</code>: small context setting for this short lab.</li><li><code>num_predict</code>: maximum generated token budget; set with <code>--max-tokens</code>.</li><li><code>keep_alive=0</code>: asks Ollama to unload a chat model after a response, reducing resident model memory but adding reload time. The embedding client&#x27;s default residency can differ.</li><li><code>reasoning=False</code>: used for <code>qwen3:8b</code> to request a direct answer instead of a thinking phase; requires a compatible Ollama/model version.</li><li><code>client_kwargs</code>: timeout and disabled inherited proxy settings for the configured connection.</li><li><code>require_models</code>: checks <code>/api/tags</code> before generation and reports missing exact tags.</li><li><code>invoke</code>: performs a blocking model call and returns an AI message. <code>text_content</code> extracts the answer text.</li><li><code>prompt | model | parser</code>: LangChain&#x27;s runnable composition, often called LCEL. The parser returns a string.</li></ul>
+<p><code>--timeout</code> defaults to 240 seconds; it is a client operation timeout, not a strict total workflow deadline. <code>--max-tokens</code> defaults to 384. Most examples support these shared options:</p>
+<div class="codebox"><div class="codehead">powershell<button class="copy">Copy</button></div><pre><code>.\.venv\Scripts\python.exe 01_single_model.py --model phi3:latest --timeout 600 --max-tokens 512 --base-url http://127.0.0.1:11434</code></pre></div>
+<p>Set <code>OLLAMA_BASE_URL</code> to change the default server URL. Prefer loopback for this lab. Using a remote URL sends the prompts and policy excerpts to that server.</p><details><summary>Read common.py</summary><div class="codebox"><div class="codehead">python<button class="copy">Copy</button></div><pre><code>&quot;&quot;&quot;Small shared settings and Ollama connection checks for the five demos.&quot;&quot;&quot;
+import argparse
+import json
+import math
+import os
+from urllib.error import HTTPError, URLError
+from urllib.request import ProxyHandler, Request, build_opener
+
+CHAT_MODELS = (
+    &quot;llama3.2:1b&quot;,
+    &quot;phi3:latest&quot;,
+    &quot;llama3.2:latest&quot;,
+    &quot;qwen3:8b&quot;,
+)
+EMBEDDING_MODEL = &quot;nomic-embed-text:latest&quot;
+
+
+def positive_int(value):
+    number = int(value)
+    if number &lt;= 0:
+        raise argparse.ArgumentTypeError(&quot;Use a positive integer.&quot;)
+    return number
+
+
+def add_settings(parser):
+    parser.add_argument(
+        &quot;--base-url&quot;, default=os.getenv(&quot;OLLAMA_BASE_URL&quot;, &quot;http://127.0.0.1:11434&quot;),
+        help=&quot;Ollama server URL. Default: http://127.0.0.1:11434&quot;,
+    )
+    parser.add_argument(&quot;--timeout&quot;, type=positive_int, default=240,
+                        help=&quot;Client operation timeout in seconds. Default: 240&quot;)
+    parser.add_argument(&quot;--max-tokens&quot;, type=positive_int, default=384,
+                        help=&quot;Maximum generated tokens. Default: 384&quot;)
+
+
+def installed_models(base_url):
+    &quot;&quot;&quot;Inspect an already-running Ollama server; never download a model.&quot;&quot;&quot;
+    url = base_url.rstrip(&quot;/&quot;) + &quot;/api/tags&quot;
+    request = Request(url, headers={&quot;Accept&quot;: &quot;application/json&quot;})
+    # Local inference should not inherit a corporate HTTP proxy.
+    opener = build_opener(ProxyHandler({}))
+    try:
+        with opener.open(request, timeout=10) as response:
+            data = json.load(response)
+    except (HTTPError, URLError, TimeoutError, OSError) as error:
+        raise RuntimeError(
+            f&quot;Cannot reach Ollama at {base_url}. Open Ollama, or run &#x27;ollama serve&#x27; &quot;
+            &quot;if no server is already running. Check --base-url.&quot;
+        ) from error
+    names = [item.get(&quot;name&quot;) or item.get(&quot;model&quot;)
+             for item in data.get(&quot;models&quot;, [])]
+    return sorted({name for name in names if isinstance(name, str)})
+
+
+def require_models(base_url, wanted):
+    installed = installed_models(base_url)
+    missing = sorted(set(wanted) - set(installed))
+    if missing:
+        raise RuntimeError(
+            &quot;Missing exact model tag(s): &quot; + &quot;, &quot;.join(missing)
+            + &quot;. Run &#x27;ollama list&#x27; and choose an installed tag.&quot;
+        )
+
+
+def make_chat(model, args):
+    if model not in CHAT_MODELS:
+        raise ValueError(&quot;Choose a chat model from CHAT_MODELS.&quot;)
+    from langchain_ollama import ChatOllama
+
+    settings = {
+        &quot;model&quot;: model,
+        &quot;base_url&quot;: args.base_url,
+        &quot;temperature&quot;: 0.2,
+        &quot;num_ctx&quot;: 2048,
+        &quot;num_predict&quot;: args.max_tokens,
+        &quot;keep_alive&quot;: 0,
+        &quot;client_kwargs&quot;: {&quot;timeout&quot;: args.timeout, &quot;trust_env&quot;: False},
+    }
+    if model == &quot;qwen3:8b&quot;:
+        settings[&quot;reasoning&quot;] = False
+    return ChatOllama(**settings)
+
+
+def text_content(message):
+    &quot;&quot;&quot;Handle either text content or standard text content blocks.&quot;&quot;&quot;
+    content = message.content
+    if isinstance(content, str):
+        text = content
+    elif isinstance(content, list):
+        text = &quot;\n&quot;.join(
+            block if isinstance(block, str) else block.get(&quot;text&quot;, &quot;&quot;)
+            for block in content if isinstance(block, (str, dict))
+        )
+    else:
+        text = &quot;&quot;
+    if not text.strip():
+        raise RuntimeError(
+            &quot;The model returned no answer text. Increase --max-tokens and check &quot;
+            &quot;the model&#x27;s thinking settings and Ollama version.&quot;
+        )
+    return text.strip()
+
+
+def cosine_similarity(left, right):
+    if not left or len(left) != len(right):
+        raise ValueError(&quot;Embedding vectors must have equal, nonzero dimensions.&quot;)
+    dot = sum(a * b for a, b in zip(left, right))
+    magnitude = math.sqrt(sum(x * x for x in left) * sum(x * x for x in right))
+    if magnitude == 0:
+        raise ValueError(&quot;Cannot compare a zero-length embedding vector.&quot;)
+    return dot / magnitude
+
+
+def run_cli(main):
+    try:
+        main()
+    except KeyboardInterrupt:
+        print(&quot;\nStopped by user.&quot;)
+        raise SystemExit(130)
+    except Exception as error:
+        print(f&quot;ERROR: {error}&quot;)
+        print(&quot;Check the README troubleshooting section.&quot;)
+        raise SystemExit(1)
+</code></pre></div></details><div class="pager"><a href="#s9">← Previous</a><a href="#s11">Next →</a></div></section><section id="s11"><div class="eyebrow">LESSON 11 / 13</div><h2>Troubleshooting and memory</h2><div class="tablewrap"><table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody><tr><td>Cannot reach Ollama</td><td>Open Ollama or start <code>ollama serve</code> if no instance is running; check <code>--base-url</code>.</td></tr><tr><td>Missing exact model tag</td><td>Run <code>ollama list</code>; choose one of your listed tags.</td></tr><tr><td><code>No module named langchain_ollama</code></td><td>Run the dependency installation with the same virtual-environment Python used for the scripts.</td></tr><tr><td>Slow first response</td><td>Model loading takes time. Start with <code>llama3.2:1b</code>; increase <code>--timeout</code> if needed.</td></tr><tr><td>RAM pressure or model load error</td><td>Close other model sessions, inspect <code>ollama ps</code>, use the 1b model, and avoid simultaneous heavy calls. You can stop a loaded model with <code>ollama stop MODEL_TAG</code>.</td></tr><tr><td>Empty or truncated answer</td><td>Increase <code>--max-tokens</code>; for Qwen check thinking support and update Ollama if needed.</td></tr><tr><td>Qwen thinking-setting error</td><td>Check the current Ollama thinking documentation and installed model version; use <code>phi3:latest</code> to continue the lab.</td></tr><tr><td>Unexpected policy answer</td><td>Inspect retrieved evidence, rephrase the query, or try <code>--top-k 2</code>; ranking is not guaranteed.</td></tr><tr><td>Port already in use</td><td>Check whether Ollama is already running; do not start duplicate servers.</td></tr></tbody></table></div>
+<p>The examples do not enable LangSmith tracing. If your shell has tracing configured from another project, clear <code>LANGSMITH_TRACING</code>, <code>LANGCHAIN_TRACING_V2</code>, <code>LANGSMITH_API_KEY</code> and <code>LANGCHAIN_API_KEY</code> from this process before running with sensitive data. Package installation is online; subsequent local inference does not require a paid model API.</p><div class="pager"><a href="#s10">← Previous</a><a href="#s12">Next →</a></div></section><section id="s12"><div class="eyebrow">LESSON 12 / 13</div><h2>Practice and check your understanding</h2><ol><li>Ask the same C# question to all four chat models. Compare correctness manually.</li><li>Swap the writer/reviewer model tags. Observe the draft and rewrite.</li><li>Change the detailed task route in <code>04_route_models.py</code> to <code>llama3.2:latest</code>.</li><li>Add a fourth fictional policy with a unique ID; ask a question that it answers.</li><li>Ask a question absent from the policies. Inspect whether the model says evidence is missing.</li></ol><details><summary>Can nomic-embed-text answer a chat question?</summary><p>No. It produces numeric vectors. Use a chat model to generate an answer.</p></details><details><summary>Does Lesson 2 run all models at once?</summary><p>No. It calls models sequentially. This helps limit simultaneous chat-model memory use.</p></details><details><summary>Does the reviewer guarantee correctness?</summary><p>No. It rewrites a draft but can still invent or preserve errors.</p></details><details><summary>What does the pipe operator do here?</summary><p>It connects LangChain runnable stages: prompt, model, and string output parser.</p></details><details><summary>Why use the same embedding model for the query and documents?</summary><p>Their vectors must belong to the same embedding space so similarity comparisons are meaningful.</p></details><div class="pager"><a href="#s11">← Previous</a><a href="#s13">Next →</a></div></section><section id="s13"><div class="eyebrow">LESSON 13 / 13</div><h2>Run checklist, files and references</h2><div class="codebox"><div class="codehead">text<button class="copy">Copy</button></div><pre><code>ollama-langchain-multi-model/
+  README.md
+  requirements.txt
+  tutorial.html
+  common.py
+  check_setup.py
+  01_single_model.py
+  02_compare_models.py
+  03_two_model_pipeline.py
+  04_route_models.py
+  05_embeddings_rag.py
+  data/policies.json
+  tests/test_common.py</code></pre></div>
+<p>Open <code>tutorial.html</code> directly in your browser for the illustrated lessons. To check helper behavior without contacting Ollama:</p>
+<div class="codebox"><div class="codehead">powershell<button class="copy">Copy</button></div><pre><code>.\.venv\Scripts\python.exe -m unittest discover -s tests -v</code></pre></div>
+<p>Delivery verification: Python syntax, helper unit tests and CLI help were checked in the authoring environment. A live Ollama server and your local models were unavailable there, so generated answers and end-to-end inference have not been verified. Run <code>check_setup.py</code>, then Lesson 1 locally first.</p>
+<h3>Official references</h3>
+<ul><li><a href="https://docs.langchain.com/oss/python/integrations/chat/ollama" target="_blank" rel="noopener">LangChain ChatOllama</a></li><li><a href="https://docs.langchain.com/oss/python/integrations/embeddings/ollama" target="_blank" rel="noopener">LangChain OllamaEmbeddings</a></li><li><a href="https://reference.langchain.com/python/langchain-ollama/chat_models/ChatOllama" target="_blank" rel="noopener">ChatOllama API reference</a></li><li><a href="https://docs.ollama.com/api/tags" target="_blank" rel="noopener">Ollama model list API</a></li><li><a href="https://docs.ollama.com/faq" target="_blank" rel="noopener">Ollama memory and configuration FAQ</a></li><li><a href="https://docs.ollama.com/capabilities/thinking" target="_blank" rel="noopener">Ollama thinking support</a></li><li><a href="https://ollama.com/library/nomic-embed-text" target="_blank" rel="noopener">nomic-embed-text model</a></li></ul>
+<p>Prepared for your exact supplied model list on 11 November 2026. Keep your generated local dependency lock for reproducible classroom setup.</p><div class="pager"><a href="#s12">← Previous</a><a href="#top">Back to top ↑</a></div></section><section><h2>Your lab notes</h2><p>Notes are saved in this browser when local storage is available. File-browser storage behavior can vary.</p><textarea id="notes" class="notes" aria-label="Lab notes" placeholder="Record your model choices and observations..."></textarea></section><footer>ItTechGenie training material · 11 November 2026 · No external scripts, fonts or diagram services required.</footer></main></div><script>document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',async()=>{const text=b.closest('.codebox').querySelector('pre').textContent;try{await navigator.clipboard.writeText(text);b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1500)}catch(e){b.textContent='Select code to copy'}}));const note=document.getElementById('notes');try{note.value=localStorage.getItem('ollama-langchain-notes')||''}catch(e){}note.addEventListener('input',()=>{try{localStorage.setItem('ollama-langchain-notes',note.value)}catch(e){}});const links=[...document.querySelectorAll('aside a')];if('IntersectionObserver' in window){new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id))}}),{rootMargin:'-10% 0px -65% 0px'}).observe(document.querySelector('section'));const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id))}),{rootMargin:'-10% 0px -65% 0px'});document.querySelectorAll('section').forEach(s=>observer.observe(s));}</script></body></html>

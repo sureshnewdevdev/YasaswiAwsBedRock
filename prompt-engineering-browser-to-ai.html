@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From Keystroke to AI Answer | ItTechGenie</title>
+<style>
+:root{--ink:#142237;--muted:#45566a;--line:#d9e3ed;--bg:#edf3f8;--paper:#fff;--teal:#00645e;--deep:#102741;--soft:#e4f5f0;--gold:#f1bb5d}
+*{box-sizing:border-box}html{scroll-padding-top:5.5rem}body{margin:0;font:16px/1.62 system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+header{position:sticky;top:0;z-index:2;background:var(--deep);color:white;display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.75rem clamp(1rem,4vw,3rem)}
+header a{color:white}a{color:var(--teal);text-underline-offset:.18em}button,input,select,textarea{font:inherit}button,select,textarea{border:1px solid #94a8bc;border-radius:.55rem;padding:.48rem .7rem;background:white;color:var(--ink)}
+button{cursor:pointer;font-weight:650}button:hover:not(:disabled){background:var(--soft);border-color:var(--teal)}button:disabled{opacity:.55;cursor:default}.primary{background:var(--teal);border-color:var(--teal);color:white}.primary:hover:not(:disabled){background:#004d48}
+:focus-visible{outline:3px solid #986004;outline-offset:3px}.wrap{display:grid;grid-template-columns:228px minmax(0,1fr);max-width:1330px;margin:auto;gap:1.25rem;padding:1.25rem}
+aside{align-self:start;position:sticky;top:5.15rem;max-height:calc(100vh - 6.3rem);overflow:auto;padding:1rem;background:var(--paper);border:1px solid var(--line);border-radius:1rem}
+aside a{display:block;padding:.31rem .43rem;border-radius:.4rem;text-decoration:none;color:var(--ink);font-size:.88rem}aside a:hover,aside a[aria-current]{background:var(--soft);color:#004d48}.caption{color:var(--muted);font-size:.92rem}
+main{min-width:0}.hero,section{border-radius:1.05rem;padding:clamp(1.12rem,4vw,2.5rem);margin-bottom:1rem}
+.hero{background:linear-gradient(122deg,#102741,#134651);color:white}.hero p{max-width:67ch}.hero a{color:#c9fff0}.eyebrow{font-size:.81rem;text-transform:uppercase;letter-spacing:.13em;font-weight:750}.hero .eyebrow{color:#9fe8d7}
+h1,h2,h3,p{margin-top:0}h1{line-height:1.06;font-size:clamp(2.1rem,5vw,4rem);letter-spacing:-.045em;margin-bottom:.8rem}h2{font-size:clamp(1.45rem,3vw,2.1rem);line-height:1.18;letter-spacing:-.025em;margin-bottom:.85rem}h3{font-size:1.1rem;margin-bottom:.55rem}
+section{background:var(--paper);border:1px solid var(--line)}section p:last-child,li p:last-child{margin-bottom:0}li+li{margin-top:.4rem}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;overflow-wrap:anywhere}
+pre{background:#142840;color:#eaf4ff;border-radius:.65rem;padding:1rem;overflow:auto;line-height:1.48;tab-size:4}pre code{overflow-wrap:normal}details{border:1px solid var(--line);border-radius:.6rem;margin:.65rem 0;padding:.6rem .8rem}summary{cursor:pointer;font-weight:700}
+.callout{padding:.9rem 1rem;border-left:4px solid var(--teal);border-radius:.45rem;background:var(--soft);margin:.85rem 0}.caution{border-color:#ad650d;background:#fff2dc}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.card{border:1px solid var(--line);padding:.9rem;border-radius:.7rem}.pills,.bar{display:flex;flex-wrap:wrap;align-items:center;gap:.55rem}.pill{border:1px solid var(--line);padding:.2rem .55rem;border-radius:99px;font-size:.84rem}.hero .pill{border-color:#69919d}
+.flow{margin:.9rem 0}.steps{display:flex;flex-wrap:wrap;align-items:center;gap:.42rem}.step{background:var(--soft);border:1px solid #bedcd4;padding:.35rem .65rem;border-radius:.45rem;font-weight:650}.arrow{color:var(--teal);font-weight:800}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{padding:.55rem .65rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}thead{background:#eaf1f7}tbody tr:hover{background:#f4faf8}
+label{font-weight:650}textarea{width:100%;min-height:5.3rem;resize:vertical}#activity{max-height:22rem;overflow:auto;margin-top:.65rem}#activity code{white-space:pre-wrap;overflow-wrap:anywhere}#chat-output{min-height:3.4rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.lesson-nav{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.65rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--line);font-size:.87rem}.lesson-nav button{font-size:.84rem}
+fieldset{border:1px solid var(--line);border-radius:.6rem;margin:.65rem 0;padding:.7rem}legend{font-weight:720}fieldset label{display:block;font-weight:500;margin:.25rem 0}
+dialog{border:1px solid var(--line);border-radius:1rem;width:min(92vw,34rem);padding:1rem}dialog::backdrop{background:#0c213a99}.flash{animation:flash .7s ease-out}@keyframes flash{from{box-shadow:0 0 0 .4rem #f1bb5d}to{box-shadow:0 0 0 0 #f1bb5d00}}
+@media(prefers-reduced-motion:reduce){.flash{animation:none}}@media(max-width:820px){.wrap{display:block;padding:.7rem}aside{position:static;max-height:none;margin-bottom:.7rem}aside nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.grid{grid-template-columns:1fr}header{position:static}aside nav{grid-template-columns:1fr}}
+@media print{header,aside,button,.lesson-nav,dialog{display:none!important}.wrap{display:block;padding:0}.hero{background:white;color:var(--ink);padding:0}.hero .eyebrow{color:var(--ink)}section{break-inside:auto;border:none;padding:.4rem 0}}
+</style></head><body>
+<header><strong>ItTechGenie · Prompt Engineering</strong><a href="#start">Lesson overview</a></header>
+<div class="wrap"><aside><nav aria-label="Tutorial sections">
+<a href="#start">01 · Learning outcomes</a><a href="#events">02 · Typing and requests</a><a href="#architecture">03 · End-to-end flow</a>
+<a href="#http">04 · HTTP 200 and API keys</a><a href="#observe">05 · Chrome DevTools</a><a href="#demo">06 · Interactive trace</a>
+<a href="#local">07 · Real local requests</a><a href="#routes">08 · Where answers come from</a><a href="#retrieval">09 · Finding the right evidence</a>
+<a href="#prompt">10 · Prompt engineering lab</a><a href="#diagnose">11 · Troubleshooting</a><a href="#quiz">12 · Timed knowledge check</a>
+<a href="#teach">13 · Trainer notes and sources</a>
+</nav></aside>
+<main>
+<div class="hero"><div class="eyebrow">Trainer edition · Browser networking + grounded answers</div>
+<h1>From keystroke<br>to AI answer</h1>
+<p>Use Chrome DevTools to see what a chat app sends while you type and when you click Send. Then follow a policy question through retrieval, source checks, and answer generation.</p>
+<div class="pills"><span class="pill">45-minute lesson</span><span class="pill">Offline simulator</span><span class="pill">Optional localhost lab</span></div></div>
+
+<section id="start"><h2>01 · Learning outcomes</h2>
+<p>By the end, learners can distinguish an input event from an HTTP request, interpret a <code>200</code> response, explain what an API key does, and trace how a grounded answer selects and cites evidence.</p>
+<div class="callout"><strong>Opening question</strong> “I press a key and see a 200 in DevTools. What did the server receive?” Ask students to propose a test before showing them the answer.</div>
+<p>Use a harmless marker such as <code>rag-demo-42</code>. All policy documents and model outputs in the classroom lab are fictional.</p>
+</section>
+
+<section id="events"><h2>02 · What happens when you type?</h2>
+<p>A keyboard event describes a key action. The <code>input</code> event fires when the user edits the field. Paste and deletion can also change the input, and an input method editor (IME) can compose text across several keystrokes. JavaScript decides whether any of these events trigger a network operation. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event">MDN input event</a></p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Possible app behavior</th><th scope="col">When it can send</th><th scope="col">Example payload</th></tr></thead><tbody>
+<tr><td>Submit-only chat</td><td>On Send or a configured keyboard shortcut</td><td><code>{"prompt":"Explain RAG"}</code></td></tr>
+<tr><td>Draft sync</td><td>After each edit or after a pause</td><td><code>{"draft":"Explain RA"}</code></td></tr>
+<tr><td>Activity event</td><td>On an edit, focus, or timer</td><td><code>{"event":"composer_edit"}</code></td></tr>
+<tr><td>Autocomplete or live checks</td><td>As the product chooses, often after a pause</td><td><code>{"prefix":"Expl"}</code></td></tr>
+<tr><td>Unrelated background work</td><td>On a timer or another app event</td><td>Heartbeat or an account refresh</td></tr>
+</tbody></table></div>
+<p>Autosaving a draft can transmit prompt text before Send. A feature can also perform computation before Send, depending on the implementation. Establish either claim from the observed content and supporting evidence. Product behavior can vary by feature, version, and session.</p>
+</section>
+
+<section id="architecture"><h2>03 · End-to-end request and response flow</h2>
+<p>This is an illustrative architecture for a custom chat app. The public developer APIs are examples of the backend-to-provider hop. ChatGPT and Gemini web apps can use their own interfaces.</p>
+<div class="card flow"><h3>While composing</h3><div class="steps"><span class="step">Edit text box</span><span class="arrow" aria-hidden="true">→</span><span class="step">Browser input handler</span><span class="arrow" aria-hidden="true">→</span><span class="step">App decides whether to send</span></div>
+<p class="caption">Depending on the mode, the draft stays in the page, the browser sends an activity event, or it sends draft content immediately or after a pause.</p></div>
+<div class="card flow"><h3>On Send</h3><div class="steps"><span class="step">Browser submits prompt</span><span class="arrow" aria-hidden="true">→</span><span class="step">App backend</span><span class="arrow" aria-hidden="true">→</span><span class="step">Model API</span></div>
+<p class="caption">The backend can assemble instructions, conversation context and retrieved passages. It authenticates its model API call with server-held credentials.</p></div>
+<div class="card flow"><h3>On response</h3><div class="steps"><span class="step">Model generates output</span><span class="arrow" aria-hidden="true">→</span><span class="step">App backend relays output</span><span class="arrow" aria-hidden="true">→</span><span class="step">Browser renders answer</span></div>
+<p class="caption">The model processes the supplied context and generates output tokens. One request can deliver many output chunks over a stream. Chunk boundaries can differ from token or word boundaries. In the OpenAI Responses API, <code>response.output_text.delta</code> represents incremental text and <code>response.completed</code> signals completion. <a href="https://developers.openai.com/api/docs/guides/streaming-responses">OpenAI streaming guide</a></p></div>
+</section>
+
+<section id="http"><h2>04 · HTTP 200, the payload, and the API key</h2>
+<div class="grid">
+<div class="card"><h3>HTTP status</h3><p><code>200 OK</code> says the server reports success for that HTTP request. For a streaming endpoint, inspect stream events to see whether generation actually finished. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/200">MDN HTTP 200</a></p></div>
+<div class="card"><h3>Request payload</h3><p>The request body can carry a JSON field like <code>prompt</code> or <code>draft</code>. A query string or WebSocket message can also carry data in other designs.</p></div>
+<div class="card"><h3>Browser session</h3><p>The browser may authenticate to the app using a login session or other app-issued credential. That mechanism belongs to the app-to-browser relationship.</p></div>
+<div class="card"><h3>Provider API key</h3><p>An API key authenticates the request to the provider. It is a secret credential. Keep long-lived provider keys on the backend. <a href="https://developers.openai.com/api/reference/overview">OpenAI API authentication</a></p></div></div>
+<h3 style="margin-top:1rem">Example backend-to-provider request</h3>
+<p>This annotated HTTP example uses placeholders. The <code>Authorization</code> header carries the credential, and the JSON body carries the input and generation settings.</p>
+<pre><code id="http-code">POST /v1/responses HTTP/1.1
+Host: api.openai.com
+Authorization: Bearer &lt;SERVER_SIDE_SECRET&gt;
+Content-Type: application/json
+
+{
+  "model": "&lt;MODEL_ID_AVAILABLE_TO_YOUR_PROJECT&gt;",
+  "instructions": "Explain concepts for first-time learners.",
+  "input": "Explain RAG in one paragraph.",
+  "stream": true
+}</code></pre>
+<p>Gemini’s developer API also documents separate generate and stream operations. Its request schema uses <code>contents</code>. <a href="https://developers.openai.com/api/docs/guides/migrate-to-responses">OpenAI Responses request format</a> · <a href="https://ai.google.dev/api/generate-content">Gemini generate content reference</a></p>
+</section>
+
+<section id="observe"><h2>05 · Observe a chat app in Chrome DevTools</h2>
+<ol>
+<li>Open a fresh chat and use test text only. Open DevTools with <kbd>F12</kbd> or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> on Windows, then select <strong>Network</strong>.</li>
+<li>Clear the recording. Observe 5 seconds with no typing to establish which requests already occur. Enable <strong>Preserve log</strong> if the test involves a navigation.</li>
+<li>Type <code>rag-demo-42</code> slowly without sending. Record how many new rows appear and their timing. Repeat with rapid typing and pause for a second. If you see several rows per edit, inspect them separately.</li>
+<li>Start with <strong>Fetch/XHR</strong>. For each candidate row, check <strong>Headers</strong> for URL, method and status, <strong>Payload</strong> for the marker or partial text, <strong>Initiator</strong> for the calling code, and <strong>Response</strong> or <strong>Preview</strong> for what the server returned.</li>
+<li>Click <strong>Send</strong> once. Compare the request and response with those from typing. If filtering hides traffic, switch to <strong>All</strong>. For a WebSocket connection, select its row and inspect <strong>Messages</strong>. Multiple messages can share the same connection. For supported streaming requests, also look for <strong>EventStream</strong>.</li>
+<li>Write a conclusion tied to the inspected traffic. Keep cookies, authorization headers, and real chat content out of shared screenshots or captures. <a href="https://developer.chrome.com/docs/devtools/network/reference/">Chrome DevTools Network reference</a></li>
+</ol>
+<div class="callout"><strong>Sample finding.</strong> “When I typed, a request returned 200 and its readable payload contained my partial marker. This confirms the browser sent draft text to that endpoint during my test. The browser capture alone does not reveal whether the endpoint invoked a model, retained the text, or passed it to another service.”</div>
+<p>If the payload is unreadable or the marker is absent, record the observation as inconclusive for that request. Backend traces or product documentation can establish what the receiving service does next.</p>
+</section>
+
+<section id="demo"><h2>06 · Interactive request trace</h2>
+<p id="demo-status" class="callout"></p>
+<form id="chat-form">
+<div class="bar"><label for="mode">Typing mode</label><select id="mode">
+<option value="submit">Send only</option><option value="activity">Activity event on edit</option><option value="draft">Draft request on edit</option><option value="debounce">Draft after a 600 ms pause</option>
+</select></div>
+<p style="margin:.7rem 0 .3rem"><label for="draft">Chat composer</label></p>
+<textarea id="draft" maxlength="500" placeholder="Type RAG or a harmless marker"></textarea>
+<div class="bar"><button class="primary" id="send" type="submit">Send prompt</button><button type="button" id="reset-trace">Reset trace</button><span id="counts" aria-live="polite"></span></div></form>
+<div class="table-wrap" id="activity" tabindex="0" aria-label="Request log"><table><thead><tr><th scope="col">#</th><th scope="col">Request</th><th scope="col">Payload</th><th scope="col">Status</th></tr></thead><tbody id="trace"></tbody></table></div>
+<h3 style="margin-top:1rem">Mock streamed answer</h3><pre id="chat-output" aria-live="polite">Send a prompt to start.</pre>
+<p>Reset between trials. In <strong>Activity event</strong>, type R, A, G separately to see three requests carrying an event name. In <strong>Draft request</strong>, the three bodies carry <code>R</code>, <code>RA</code> and <code>RAG</code>. In <strong>Draft after a pause</strong>, type all three within 600 ms and wait for one draft request. In <strong>Send only</strong>, wait first and then press Send. Each Send starts one chat request in this lab.</p>
+</section>
+
+<section id="local"><h2>07 · Real localhost requests in DevTools</h2>
+<p>Use Python 3 and the same HTML file. The server handles actual browser requests on your computer and returns scripted responses. The lab uses no external model, credentials, or packages.</p>
+<ol><li>Download this HTML with the filename <code>prompt-engineering-browser-to-ai.html</code>.</li><li>Copy the code below into <code>demo-server.py</code> in the same folder.</li>
+<li>Open a terminal in that folder and run <code>py -3 demo-server.py</code> on Windows, or <code>python3 demo-server.py</code> on macOS or Linux.</li>
+<li>Open <a href="http://127.0.0.1:8765/?lab=1">http://127.0.0.1:8765/?lab=1</a>, then open <strong>Network → Fetch/XHR</strong> and filter by <code>/lab/</code>. Try each mode above. Inspect <strong>Payload</strong> and compare the 200 responses for <code>/lab/activity</code>, <code>/lab/draft</code> and <code>/lab/chat</code>.</li>
+<li>In the chat request, inspect <strong>Response</strong> after the stream finishes. The demo uses newline-delimited JSON and sends several events within one HTTP response. Stop the server with <kbd>Ctrl</kbd>+<kbd>C</kbd>.</li></ol>
+<details><summary>Show the complete Python server</summary><p><button type="button" data-copy="server-code">Copy Python server</button></p><pre><code id="server-code">from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import urlsplit
+import json
+import time
+
+PAGE = Path(__file__).with_name(&quot;prompt-engineering-browser-to-ai.html&quot;)
+
+
+class Lab(BaseHTTPRequestHandler):
+    def reply(self, status, content_type, body):
+        self.send_response(status)
+        self.send_header(&quot;Content-Type&quot;, content_type)
+        self.send_header(&quot;Content-Length&quot;, str(len(body)))
+        self.send_header(&quot;Cache-Control&quot;, &quot;no-store&quot;)
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):
+        if urlsplit(self.path).path != &quot;/&quot;:
+            self.send_error(404)
+            return
+        self.reply(200, &quot;text/html; charset=utf-8&quot;, PAGE.read_bytes())
+
+    def do_POST(self):
+        routes = {&quot;/lab/activity&quot;: &quot;event&quot;, &quot;/lab/draft&quot;: &quot;draft&quot;,
+                  &quot;/lab/chat&quot;: &quot;prompt&quot;}
+        field = routes.get(self.path)
+        if field is None:
+            self.send_error(404)
+            return
+        if self.headers.get_content_type() != &quot;application/json&quot;:
+            self.send_error(415)
+            return
+        try:
+            size = int(self.headers.get(&quot;Content-Length&quot;, &quot;0&quot;))
+            if not 0 &lt; size &lt;= 16000:
+                self.send_error(413)
+                return
+            data = json.loads(self.rfile.read(size))
+            if not isinstance(data, dict) or not isinstance(data.get(field), str):
+                raise ValueError(&quot;Expected an object with a text field&quot;)
+        except (ValueError, UnicodeError):
+            self.send_error(400)
+            return
+
+        if self.path != &quot;/lab/chat&quot;:
+            self.reply(200, &quot;application/json&quot;, b&#x27;{&quot;received&quot;:true}&#x27;)
+            return
+
+        # The server flushes simulated events. No model or external service runs.
+        self.send_response(200)
+        self.send_header(&quot;Content-Type&quot;, &quot;application/x-ndjson&quot;)
+        self.send_header(&quot;Cache-Control&quot;, &quot;no-store&quot;)
+        self.end_headers()
+        events = [
+            {&quot;type&quot;: &quot;start&quot;},
+            {&quot;type&quot;: &quot;delta&quot;, &quot;text&quot;: &quot;Mock response. &quot;},
+            {&quot;type&quot;: &quot;delta&quot;, &quot;text&quot;: &quot;The server received your submitted prompt.&quot;},
+            {&quot;type&quot;: &quot;done&quot;}
+        ]
+        try:
+            for event in events:
+                self.wfile.write((json.dumps(event) + &quot;\n&quot;).encode())
+                self.wfile.flush()
+                time.sleep(0.22)
+        except (BrokenPipeError, ConnectionResetError):
+            return
+
+
+if __name__ == &quot;__main__&quot;:
+    if not PAGE.is_file():
+        raise SystemExit(f&quot;Put {PAGE.name} in the same folder as demo-server.py.&quot;)
+    print(&quot;Open http://127.0.0.1:8765/?lab=1&quot;, flush=True)
+    with ThreadingHTTPServer((&quot;127.0.0.1&quot;, 8765), Lab) as server:
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            pass</code></pre></details>
+</section>
+
+<section id="routes"><h2>08 · Where the answer can come from</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Route</th><th scope="col">Information used</th><th scope="col">Example</th></tr></thead><tbody>
+<tr><td>Direct generation</td><td>The prompt, any supplied context, and patterns learned during training</td><td>“Explain RAG to a beginner.”</td></tr>
+<tr><td>Supplied context</td><td>The text or file content provided to the model</td><td>“Summarize the attached policy excerpt.”</td></tr>
+<tr><td>Web search tool</td><td>Results or pages fetched by a search-enabled system</td><td>“Find the current documentation for this API.”</td></tr>
+<tr><td>Private retrieval (RAG)</td><td>Relevant passages from an authorized document index</td><td>“What is our current production-access approval rule?”</td></tr>
+<tr><td>Database or API tool</td><td>Structured data returned by an application integration</td><td>“What is the status of my access request?”</td></tr>
+</tbody></table></div>
+<p>An application can choose a route explicitly or let an orchestration layer select tools. A fluent answer alone offers no evidence that a lookup happened. In a custom system, use tool traces or server logs to see the path. <a href="https://developers.openai.com/api/docs/guides/migrate-to-responses">OpenAI Responses tools and outputs</a></p>
+</section>
+
+<section id="retrieval"><h2>09 · Finding the right evidence, in order</h2>
+<p><strong>Example question.</strong> “Who approves production access under the current policy?” The lab uses three fictional documents.</p>
+<div class="card flow"><h3>Before the question</h3><div class="steps"><span class="step">Load and parse</span><span class="arrow" aria-hidden="true">→</span><span class="step">Split into passages</span><span class="arrow" aria-hidden="true">→</span><span class="step">Index with metadata</span></div>
+<p class="caption">Store passage text with source, section, version, effective date, status and access metadata. An index may use keywords, embeddings, or both.</p></div>
+<ol>
+<li><strong>Interpret the question.</strong> Extract the entity <em>production access</em>, the requested fact <em>approvers</em>, and the freshness requirement <em>current policy</em>.</li>
+<li><strong>Enforce access and scope.</strong> Limit candidates to sources the requester may read. Use trusted metadata to scope by policy type, applicable system and effective version when available.</li>
+<li><strong>Retrieve candidate passages.</strong> Keyword matching finds exact phrases or IDs. Semantic search finds related wording, such as “live environment privileges.” A hybrid search can combine them.</li>
+<li><strong>Rank and select.</strong> Check that the passage answers the question directly and comes from an applicable, authoritative version. A retired policy can score highly on text similarity.</li>
+<li><strong>Build grounded context.</strong> Supply the selected passage, its source identifier, the question, and instructions to cite claims and report missing evidence.</li>
+<li><strong>Generate and verify.</strong> Check the cited text against each answer claim. When evidence is missing or active sources conflict, state the uncertainty. Retrieval quality and factual support need separate checks.</li>
+</ol>
+<div class="table-wrap"><table><thead><tr><th scope="col">Candidate</th><th scope="col">Passage</th><th scope="col">Version</th></tr></thead><tbody>
+<tr><td>ACCESS-2024 §3</td><td>Production access requires team lead approval.</td><td>Retired</td></tr>
+<tr><td>ACCESS-2026 §4</td><td>Production access requires both the application owner and Information Security to approve.</td><td>Current</td></tr>
+<tr><td>ONBOARD-2026 §2</td><td>Sandbox access requires a team lead’s approval.</td><td>Current, different scope</td></tr>
+</tbody></table></div>
+<p style="margin-top:.8rem"><label for="evidence-mode">Evidence available</label> <select id="evidence-mode"><option value="all">All three passages</option><option value="missing">Current production policy missing</option></select>
+<button type="button" id="run-evidence">Trace selection</button></p>
+<div id="evidence-output" class="callout" aria-live="polite">Select an evidence scenario and run the trace.</div>
+<p>In Amazon Bedrock terms, the preparation stage maps to data source ingestion and indexing. A retrieval operation returns matching passages. A retrieval-and-generation workflow can use those passages to compose an answer with citations where supported by the configured Knowledge Base. <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html">Amazon Bedrock Knowledge Bases</a></p>
+</section>
+
+<section id="prompt"><h2>10 · Prompt engineering practice</h2>
+<p>Compare “Who approves access?” with a prompt that names the system, effective version, source boundaries and expected output. Use only the fictional passages above.</p>
+<p><button type="button" data-copy="prompt-code">Copy classroom prompt</button></p>
+<pre><code id="prompt-code">Question
+Who must approve production access under the current policy?
+
+Evidence
+[ACCESS-2024 §3 | retired] Production access requires team lead approval.
+[ACCESS-2026 §4 | current] Production access requires both the application
+owner and Information Security to approve.
+[ONBOARD-2026 §2 | current] Sandbox access requires a team lead’s approval.
+
+Use evidence marked current and applicable to production access.
+Give one sentence with the approvers and cite the policy ID and section.
+If no current applicable passage supports the answer, say so.
+If current applicable passages conflict, describe the conflict.</code></pre>
+<details><summary>Expected answer and test variation</summary><p>“The application owner and Information Security must both approve production access [ACCESS-2026 §4].” Remove ACCESS-2026 and run again. Expected result is an explicit statement that the provided evidence does not establish the current production-access rule. Compare each claim with its cited passage.</p></details>
+<p>A well-specified prompt helps the model use available context. Evaluate retrieval separately by checking whether the right passage reached the model in the first place.</p>
+<h3 style="margin-top:1rem">Three checks for a grounded answer</h3><ol><li><strong>Retrieval.</strong> Did the current, applicable source reach the model?</li><li><strong>Answer.</strong> Did the response include both approvers, with no unsupported additions?</li><li><strong>Citation.</strong> Can a learner open the cited section and point to the exact sentence that supports the claim?</li></ol>
+</section>
+
+<section id="diagnose"><h2>11 · Troubleshooting with evidence</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Observation</th><th scope="col">Next check</th></tr></thead><tbody>
+<tr><td>200 on each edit</td><td>Check Payload and Initiator. Test for the marker, and compare with the idle baseline.</td></tr>
+<tr><td>Many rows for one action</td><td>Compare methods, endpoints, initiators and timings. One action may trigger several services. An <code>OPTIONS</code> row can be a CORS preflight.</td></tr>
+<tr><td>Nothing appears while typing</td><td>Wait after the last edit, try All and WebSocket Messages, and check whether recording and filtering are correct.</td></tr>
+<tr><td>Response arrives in pieces</td><td>Count requests separately from chunks. Look for an explicit completion or error event.</td></tr>
+<tr><td>Correct policy never appears in candidates</td><td>Check ingestion, permissions, metadata, chunking and query matching before rewriting the answer prompt.</td></tr>
+<tr><td>Wrong version appears in the answer</td><td>Inspect the retrieved versions, reranking and context. Compare the final citation with the cited passage.</td></tr>
+<tr><td>Local demo shows simulated requests</td><td>Start the Python server and open the exact loopback URL with <code>?lab=1</code>. Directly opening the file runs the offline simulation.</td></tr>
+</tbody></table></div></section>
+
+<section id="quiz"><h2>12 · Timed knowledge check</h2>
+<p>Five questions, three minutes. The review explains each answer when you submit or when the timer expires.</p>
+<div class="bar"><button class="primary" id="start-quiz" type="button">Start or restart quiz</button><strong id="quiz-clock" role="timer">3:00</strong></div>
+<form id="quiz-form" hidden><div id="quiz-questions"></div><button id="grade" class="primary" type="submit">Check answers</button></form>
+<div id="quiz-result" aria-live="polite"></div></section>
+
+<section id="teach"><h2>13 · Trainer notes and official references</h2>
+<div class="grid"><div class="card"><h3>45-minute delivery plan</h3><ul><li>0–8 min · Ask what a 200 can prove, then explain payload and credential.</li><li>8–23 min · Compare typing modes in DevTools. Have students explain each request body.</li><li>23–37 min · Follow the policy retrieval example and remove the current source.</li><li>37–45 min · Use the quiz and review the hardest answers.</li></ul></div>
+<div class="card"><h3>Interview Q&amp;A</h3><details><summary>Can a browser trace prove an LLM ran?</summary><p>It can show a request and response visible to the browser. To verify a backend model call, correlate a request ID with authorized server logs or model instrumentation.</p></details>
+<details><summary>Why debounce a draft sync?</summary><p>A debounce restarts its timer on each edit and sends after a pause, reducing traffic during bursts. This choice also delays synchronization.</p></details>
+<details><summary>Why can relevant text still lead to a wrong answer?</summary><p>A passage can match the topic while covering the wrong version, scope or date. Check authority and claim-level support.</p></details></div></div>
+<h3 style="margin-top:1rem">References</h3>
+<ul><li><a href="https://developer.chrome.com/docs/devtools/network/overview/">Chrome DevTools Network overview</a> and <a href="https://developer.chrome.com/docs/devtools/network/reference/">Network panel reference</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event">MDN Element input event</a></li>
+<li><a href="https://developers.openai.com/api/reference/overview">OpenAI API authentication</a>, <a href="https://developers.openai.com/api/docs/guides/migrate-to-responses">Responses request format</a>, and <a href="https://developers.openai.com/api/docs/guides/streaming-responses">streaming events</a></li>
+<li><a href="https://ai.google.dev/api/generate-content">Gemini API generate content</a></li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html">Amazon Bedrock Knowledge Bases</a></li></ul>
+<p class="caption">Double-click any lesson heading, or select <strong>My notes</strong>, to save a note in this browser. Notes stay separate for a file URL and a localhost URL. Browser storage availability varies.</p>
+</section>
+</main></div>
+<dialog id="note-dialog" aria-labelledby="note-title"><form method="dialog">
+<h3 id="note-title">My notes</h3><label for="note-value">Lesson note</label><textarea id="note-value" maxlength="3000"></textarea>
+<p id="note-status" class="caption" aria-live="polite"></p>
+<div class="bar"><button class="primary" type="button" id="save-note">Save note</button><button value="cancel">Close</button></div></form></dialog>
+<script>
+"use strict";
+const get = id => document.getElementById(id);
+const loopback = location.origin === "http://127.0.0.1:8765"
+  && new URLSearchParams(location.search).get("lab") === "1";
+get("demo-status").textContent = loopback
+  ? "Live localhost mode. The browser sends real POST requests to the Python server. The response is scripted."
+  : "Offline mode. This trace simulates HTTP requests. Open the localhost lab in lesson 07 to see real requests in DevTools.";
+const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+const mockEvents = [
+  { type: "start" },
+  { type: "delta", text: "Mock response. " },
+  { type: "delta", text: "The simulation accepted your submitted prompt." },
+  { type: "done" }
+];
+let timer;
+let sequence = 0;
+let requests = { typing: 0, chat: 0 };
+let session = new AbortController();
+
+function showCounts() {
+  get("counts").textContent = requests.typing + " typing · " + requests.chat + " chat";
+}
+showCounts();
+
+function addRow(path, body, kind) {
+  requests[kind]++;
+  showCounts();
+  const row = get("trace").insertRow();
+  row.insertCell().textContent = ++sequence;
+  row.insertCell().textContent = "POST " + path;
+  const code = document.createElement("code");
+  code.textContent = JSON.stringify(body);
+  row.insertCell().append(code);
+  const status = row.insertCell();
+  status.textContent = "Pending";
+  get("activity").scrollTop = get("activity").scrollHeight;
+  return status;
+}
+
+async function streamAnswer(response, signal) {
+  const output = get("chat-output");
+  let finished = false;
+  function handle(event) {
+    if (signal.aborted) return;
+    if (event.type === "start") output.textContent = "";
+    if (event.type === "delta") output.textContent += event.text;
+    if (event.type === "done") finished = true;
+  }
+  if (!response) {
+    for (const event of mockEvents) {
+      if (signal.aborted) return;
+      handle(event);
+      await wait(220);
+    }
+  } else {
+    const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+    let pending = "";
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      pending += value;
+      const lines = pending.split("\n");
+      pending = lines.pop();
+      for (const line of lines) if (line.trim()) handle(JSON.parse(line));
+    }
+    if (pending.trim()) handle(JSON.parse(pending));
+  }
+  if (signal.aborted) return;
+  if (!finished) throw new Error("Stream ended without a completion event");
+  output.textContent += "\n\n✓ Stream complete";
+}
+
+async function request(path, body, kind) {
+  const { signal } = session;
+  const status = addRow(path, body, kind);
+  let response;
+  try {
+    if (loopback) {
+      response = await fetch(path, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body), signal
+      });
+      status.textContent = String(response.status);
+      if (!response.ok) throw new Error("HTTP " + response.status);
+    } else {
+      await wait(70);
+      if (signal.aborted) return;
+      status.textContent = "200 (simulated)";
+    }
+    if (kind === "chat") await streamAnswer(response, signal);
+    else if (response) await response.json();
+  } catch (error) {
+    if (signal.aborted) return;
+    status.textContent = response?.ok
+      ? response.status + " · incomplete"
+      : response ? String(response.status) : "Request failed";
+    if (kind === "chat") get("chat-output").textContent = "Demo error. " + error.message;
+  }
+}
+
+get("draft").addEventListener("input", event => {
+  clearTimeout(timer);
+  if (event.isComposing) return;
+  const draft = event.currentTarget.value;
+  switch (get("mode").value) {
+    case "activity":
+      request("/lab/activity", { event: "composer_edit" }, "typing");
+      break;
+    case "draft":
+      request("/lab/draft", { draft }, "typing");
+      break;
+    case "debounce":
+      timer = setTimeout(() => request("/lab/draft", { draft }, "typing"), 600);
+      break;
+  }
+});
+get("mode").addEventListener("change", () => clearTimeout(timer));
+get("chat-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const prompt = get("draft").value.trim();
+  if (!prompt) {
+    get("chat-output").textContent = "Enter a prompt before sending.";
+    get("draft").focus();
+    return;
+  }
+  const { signal } = session;
+  clearTimeout(timer);
+  get("send").disabled = true;
+  get("chat-output").textContent = "Waiting for the response…";
+  await request("/lab/chat", { prompt }, "chat");
+  if (!signal.aborted) get("send").disabled = false;
+});
+get("reset-trace").addEventListener("click", () => {
+  clearTimeout(timer);
+  session.abort();
+  session = new AbortController();
+  sequence = 0;
+  requests = { typing: 0, chat: 0 };
+  get("trace").replaceChildren();
+  get("draft").value = "";
+  get("send").disabled = false;
+  get("chat-output").textContent = "Send a prompt to start.";
+  showCounts();
+  get("draft").focus();
+});
+
+get("run-evidence").addEventListener("click", () => {
+  const available = get("evidence-mode").value === "all";
+  const steps = [
+    "Scope the query to production access under the current policy.",
+    "Discard ACCESS-2024 §3 because it is retired.",
+    "Discard ONBOARD-2026 §2 because it applies to sandbox access.",
+    available
+      ? "Select ACCESS-2026 §4. Its passage directly names both approvers."
+      : "No current, applicable passage is available.",
+    available
+      ? "Verified answer. The application owner and Information Security must both approve [ACCESS-2026 §4]."
+      : "Grounded answer. The available evidence does not establish the current production-access approval rule."
+  ];
+  const list = document.createElement("ol");
+  for (const step of steps) {
+    const item = document.createElement("li");
+    item.textContent = step;
+    list.append(item);
+  }
+  get("evidence-output").replaceChildren(list);
+});
+
+const questions = [
+  ["A request returns HTTP 200 after an edit. What does 200 show?",
+    ["The request succeeded at the HTTP level", "The model finished a reply", "Every draft character was transmitted"], 0,
+    "Inspect the payload to see the submitted data and the response or stream events to understand the result."],
+  ["Where does the prompt travel in the example POST?",
+    ["The API key", "The JSON request body", "The status code"], 1,
+    "The JSON body carries the input. The Authorization header carries the credential."],
+  ["A readable typing payload contains your exact partial marker. What is established?",
+    ["The server retained it permanently", "A model completed inference", "The browser sent that draft text to the observed endpoint"], 2,
+    "Use backend evidence to learn what happened after the endpoint received the data."],
+  ["Which passage supports the current production-access answer?",
+    ["ACCESS-2024 §3, a retired production policy", "ACCESS-2026 §4, the current production policy", "ONBOARD-2026 §2, the current sandbox policy"], 1,
+    "The source must be current, applicable and directly support the approvers named."],
+  ["What should the answer say if the current policy passage is missing?",
+    ["The available evidence does not establish the current rule", "Use the retired policy", "Assume sandbox rules apply to production"], 0,
+    "A grounded answer identifies the gap when relevant, authoritative evidence is unavailable."]
+];
+let interval;
+let deadline;
+function finishQuiz(expired) {
+  clearInterval(interval);
+  let score = 0;
+  const result = document.createElement("div");
+  result.className = "callout";
+  const heading = document.createElement("strong");
+  const list = document.createElement("ol");
+  questions.forEach(([question, options, correct, why], index) => {
+    const chosen = get("quiz-form").querySelector("input[name=q" + index + "]:checked");
+    const right = chosen && Number(chosen.value) === correct;
+    if (right) score++;
+    const item = document.createElement("li");
+    item.textContent = (right ? "Correct. " : chosen ? "Review. " : "Skipped. ")
+      + question + " " + options[correct] + ". " + why;
+    list.append(item);
+  });
+  const feedback = score === questions.length ? "Excellent." : score >= 3 ? "Good progress." : "Keep practicing.";
+  heading.textContent = (expired ? "Time expired. " : "") + score + "/" + questions.length + " · " + feedback;
+  result.append(heading, list);
+  get("quiz-result").replaceChildren(result);
+  get("grade").disabled = true;
+  get("quiz-questions").querySelectorAll("fieldset").forEach(field => { field.disabled = true; });
+}
+get("start-quiz").addEventListener("click", () => {
+  clearInterval(interval);
+  const fields = get("quiz-questions");
+  fields.replaceChildren();
+  get("quiz-result").replaceChildren();
+  questions.forEach(([question, options], index) => {
+    const field = document.createElement("fieldset");
+    const legend = document.createElement("legend");
+    legend.textContent = (index + 1) + ". " + question;
+    field.append(legend);
+    options.forEach((option, optionIndex) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "q" + index;
+      input.value = optionIndex;
+      label.append(input, " " + option);
+      field.append(label);
+    });
+    fields.append(field);
+  });
+  get("quiz-form").hidden = false;
+  get("grade").disabled = false;
+  deadline = Date.now() + 180000;
+  get("quiz-clock").textContent = "3:00";
+  fields.querySelector("input").focus();
+  interval = setInterval(() => {
+    const seconds = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+    get("quiz-clock").textContent = Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
+    if (seconds === 0) finishQuiz(true);
+  }, 250);
+});
+get("quiz-form").addEventListener("submit", event => {
+  event.preventDefault();
+  if (get("grade").disabled) return;
+  const expired = Date.now() >= deadline;
+  if (expired) get("quiz-clock").textContent = "0:00";
+  finishQuiz(expired);
+});
+
+let noteId;
+function noteKey() { return "ittechgenie-keystroke-lesson:" + noteId; }
+function openNote(section) {
+  noteId = section.id;
+  get("note-title").textContent = section.querySelector("h2").textContent;
+  get("note-status").textContent = "";
+  try {
+    get("note-value").value = localStorage.getItem(noteKey()) || "";
+  } catch {
+    get("note-value").value = "";
+    get("note-status").textContent = "Browser storage is unavailable.";
+  }
+  get("note-dialog").showModal();
+  get("note-value").focus();
+}
+get("save-note").addEventListener("click", () => {
+  try {
+    localStorage.setItem(noteKey(), get("note-value").value);
+    get("note-dialog").close();
+  } catch {
+    get("note-status").textContent = "This browser could not save the note.";
+  }
+});
+
+const navLinks = [...document.querySelectorAll("aside a")];
+const sections = [...document.querySelectorAll("main section")];
+sections.forEach((section, index) => {
+  section.querySelector("h2").addEventListener("dblclick", () => openNote(section));
+  const nav = document.createElement("div");
+  nav.className = "lesson-nav";
+  const note = document.createElement("button");
+  note.type = "button";
+  note.textContent = "My notes";
+  note.addEventListener("click", () => openNote(section));
+  for (const [neighbor, label] of [[index - 1, "← Previous"], [index + 1, "Next →"]]) {
+    const link = document.createElement("a");
+    link.href = sections[neighbor] ? "#" + sections[neighbor].id : "#start";
+    link.textContent = sections[neighbor] ? label : "Overview";
+    nav.append(link);
+  }
+  nav.insertBefore(note, nav.lastChild);
+  section.append(nav);
+});
+function activateLink() {
+  const target = location.hash || "#start";
+  for (const link of navLinks) {
+    if (link.hash === target) link.setAttribute("aria-current", "location");
+    else link.removeAttribute("aria-current");
+  }
+}
+window.addEventListener("hashchange", activateLink);
+activateLink();
+document.querySelectorAll("[data-copy]").forEach(button => {
+  const label = button.textContent;
+  button.addEventListener("click", async () => {
+    const code = get(button.dataset.copy);
+    try {
+      await navigator.clipboard.writeText(code.textContent);
+      button.textContent = "Copied ✓";
+      button.classList.remove("flash");
+      requestAnimationFrame(() => button.classList.add("flash"));
+    } catch {
+      const range = document.createRange();
+      range.selectNodeContents(code);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      button.textContent = "Selected. Press Ctrl+C or Cmd+C";
+    }
+    setTimeout(() => { button.textContent = label; }, 2500);
+  });
+});
+</script></body></html>
